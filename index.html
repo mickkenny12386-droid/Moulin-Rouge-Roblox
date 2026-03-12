@@ -3,265 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wicked | Official Roblox Productions</title>
+    <title>Wicked | Emerald City Booking</title>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Montserrat:wght@300;600&display=swap" rel="stylesheet">
     
     <style>
-        :root {
-            --emerald: #97d72e;
-            --witch-black: #0a0a0a;
-            --magic-glow: 0 0 15px rgba(151, 215, 46, 0.5);
+        :root { --emerald: #97d72e; --witch-black: #0a0a0a; --magic-glow: 0 0 15px rgba(151, 215, 46, 0.6); }
+        body { margin: 0; background: var(--witch-black); color: white; font-family: 'Montserrat', sans-serif; }
+
+        /* Bezem Animatie */
+        .broom { position: fixed; top: 20%; left: -100px; font-size: 40px; animation: fly 8s linear infinite; z-index: 10; pointer-events: none; opacity: 0.6; }
+        @keyframes fly { 
+            0% { left: -100px; transform: rotate(10deg); }
+            50% { transform: translateY(-30px) rotate(-10deg); }
+            100% { left: 110%; transform: rotate(10deg); } 
         }
 
-        body {
-            margin: 0;
-            background: var(--witch-black);
-            color: white;
-            font-family: 'Montserrat', sans-serif;
-            overflow-x: hidden;
-        }
-
-        /* Bezem Animatie Loader */
-        .broom-loader {
-            position: fixed;
-            top: 50%;
-            left: -100px;
-            font-size: 30px;
-            animation: fly 3s linear infinite;
-            z-index: 9999;
-            pointer-events: none;
-        }
-
-        @keyframes fly {
-            0% { left: -50px; transform: translateY(0) rotate(10deg); }
-            50% { transform: translateY(-20px) rotate(-10deg); }
-            100% { left: 110%; transform: translateY(0) rotate(10deg); }
-        }
-
-        /* Navigatie met Glow */
-        nav {
-            background: rgba(0,0,0,0.9);
-            padding: 20px 50px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--emerald);
-            box-shadow: var(--magic-glow);
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            margin-left: 30px;
-            font-family: 'Cinzel', serif;
-            letter-spacing: 2px;
-            transition: 0.3s;
-        }
-
+        /* Navigatie */
+        nav { background: rgba(0,0,0,0.95); padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--emerald); box-shadow: var(--magic-glow); position: sticky; top: 0; z-index: 100; }
+        .logo { font-family: 'Cinzel', serif; font-size: 28px; letter-spacing: 3px; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 25px; font-family: 'Cinzel', serif; transition: 0.3s; cursor: pointer; font-size: 14px; }
         .nav-links a:hover { color: var(--emerald); text-shadow: var(--magic-glow); }
 
-        /* Luxe Banner */
-        .hero {
-            height: 450px;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.3), var(--witch-black)), 
-                        url('https://www.wickedthemusical.co.uk/wp-content/uploads/2023/10/Wicked_Header_Green_Texture.jpg');
-            background-size: cover;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            border-bottom: 1px solid #333;
-        }
+        /* Hero */
+        .hero { height: 400px; background: linear-gradient(to bottom, rgba(0,0,0,0.2), var(--witch-black)), url('https://www.wickedthemusical.co.uk/wp-content/uploads/2023/10/Wicked_Header_Green_Texture.jpg'); background-size: cover; background-position: center; display: flex; flex-direction: column; align-items: center; justify-content: center; text-shadow: 0 0 20px black; }
+        .hero h1 { font-family: 'Cinzel', serif; font-size: 5rem; margin: 0; letter-spacing: 10px; color: white; }
 
-        .hero h1 {
-            font-family: 'Cinzel', serif;
-            font-size: 4rem;
-            margin: 0;
-            letter-spacing: 15px;
-            text-shadow: 0 0 30px var(--emerald);
-        }
-
-        /* Grid & Cards */
-        .main-container {
-            max-width: 1200px;
-            margin: -50px auto 50px;
-            display: grid;
-            grid-template-columns: 320px 1fr;
-            gap: 30px;
-            padding: 0 20px;
-        }
-
-        .card {
-            background: rgba(20, 20, 20, 0.9);
-            border: 1px solid var(--emerald);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '🧹';
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            opacity: 0.1;
-            font-size: 40px;
-        }
+        /* Grid */
+        .main-grid { max-width: 1200px; margin: -60px auto 50px; display: grid; grid-template-columns: 320px 1fr; gap: 25px; padding: 0 20px; }
+        .glass-card { background: rgba(15, 15, 15, 0.95); border: 1px solid var(--emerald); border-radius: 15px; padding: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.8); }
 
         /* Kalender */
-        .calendar { display: grid; grid-template-columns: repeat(7, 1fr); border: 1px solid #333; }
-        .day {
-            min-height: 100px;
-            border: 1px solid #222;
-            padding: 10px;
-            background: #111;
-            transition: 0.3s;
-        }
-        .day:hover { background: #1a1a1a; border-color: var(--emerald); }
-        .day.has-show { cursor: pointer; border-left: 3px solid var(--emerald); }
+        .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 15px; }
+        .day { aspect-ratio: 1/1; border: 1px solid #222; background: #111; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; border-radius: 5px; }
+        .day.active { cursor: pointer; border-color: var(--emerald); background: rgba(151, 215, 46, 0.05); }
+        .day.active:hover { background: rgba(151, 215, 46, 0.15); box-shadow: inset 0 0 10px var(--emerald); }
+        .day-num { font-size: 12px; color: #555; margin-bottom: 5px; }
+        .show-tag { font-size: 10px; font-weight: bold; color: var(--emerald); }
 
-        /* Seating Chart */
-        .seating-area {
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: 8px;
-            margin-top: 20px;
-        }
-
-        .seat {
-            aspect-ratio: 1;
-            background: #333;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 9px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.2s;
-        }
-        .seat.available { background: var(--emerald); color: black; }
-        .seat.taken { background: #555; cursor: not-allowed; }
+        /* Seating */
+        .seating-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 10px; margin-top: 20px; padding: 20px; background: #000; border-radius: 10px; }
+        .seat { aspect-ratio: 1; background: #222; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+        .seat.free { background: var(--emerald); color: black; font-weight: bold; }
         .seat.vip { background: gold; box-shadow: 0 0 10px gold; color: black; }
-        .seat.blocked { background: #cc0000; }
+        .seat.taken { background: #444; color: #888; cursor: not-allowed; border: none; }
 
         /* Modals */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            background: #0f0f0f;
-            padding: 40px;
-            border: 3px solid var(--emerald);
-            z-index: 1000;
-            width: 90%;
-            max-width: 600px;
-            border-radius: 20px;
-            box-shadow: 0 0 100px rgba(0,0,0,1);
-        }
-
-        input, textarea, select {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            background: #222;
-            border: 1px solid var(--emerald);
-            color: white;
-            border-radius: 5px;
-        }
-
-        .magic-btn {
-            background: var(--emerald);
-            color: black;
-            border: none;
-            padding: 15px;
-            width: 100%;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: 0.3s;
-        }
-        .magic-btn:hover { transform: scale(1.02); box-shadow: var(--magic-glow); }
-
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85);
-            z-index: 900;
-        }
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f0f0f; padding: 40px; border: 2px solid var(--emerald); z-index: 1000; width: 500px; border-radius: 15px; box-shadow: 0 0 50px black; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 900; backdrop-filter: blur(5px); }
+        
+        input, textarea { width: 100%; padding: 12px; margin: 10px 0; background: #1a1a1a; border: 1px solid var(--emerald); color: white; border-radius: 5px; box-sizing: border-box; }
+        .btn { background: var(--emerald); color: black; border: none; padding: 15px; width: 100%; font-weight: bold; cursor: pointer; border-radius: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .btn:hover { box-shadow: var(--magic-glow); transform: translateY(-2px); }
     </style>
 </head>
 <body>
 
-    <div class="broom-loader">🧹</div>
+    <div class="broom">🧹</div>
+    <div class="overlay" id="overlay" onclick="closeAll()"></div>
 
     <nav>
-        <div style="font-family: 'Cinzel'; font-size: 24px;">Wicked <span style="color: var(--emerald);">Roblox</span></div>
+        <div class="logo">WICKED <span style="color: var(--emerald);">ROBLOX</span></div>
         <div class="nav-links">
-            <a href="#" onclick="location.reload()">HOME</a>
-            <a id="admin-link" style="display:none; color: gold;" onclick="openAdmin()">WITCH MASTER</a>
-            <a id="auth-btn" onclick="openAuth()">INLOGGEN</a>
+            <a onclick="location.reload()">HOME</a>
+            <a id="admin-btn" style="display:none; color: gold;" onclick="openModal('admin-modal')">WITCH MASTER</a>
+            <a id="login-nav" onclick="openModal('auth-modal')">LOG IN</a>
         </div>
     </nav>
 
-    <section class="hero">
-        <h1>THE EMERALD CITY</h1>
-        <p style="letter-spacing: 5px;">OFFICIAL TICKETING SYSTEM</p>
-    </section>
+    <div class="hero">
+        <h1>MARCH 2026</h1>
+        <p style="letter-spacing: 8px; color: var(--emerald);">BEWITCHING PERFORMANCES DAILY</p>
+    </div>
 
-    <div class="main-container">
+    <div class="main-grid">
         <aside>
-            <div class="card">
-                <h3 id="user-display">Welkom, Reiziger</h3>
-                <div id="user-tickets">Log in om je tickets te zien.</div>
+            <div class="glass-card">
+                <h3 id="user-title">Welkom</h3>
+                <div id="user-tickets" style="font-size: 13px; color: #aaa;">Log in om je tickets te bekijken.</div>
             </div>
             <br>
-            <div class="card">
-                <h3 style="color: var(--emerald)">HUIDIGE CAST</h3>
-                <div id="cast-info">Laden...</div>
+            <div class="glass-card">
+                <h3 style="color: var(--emerald); font-family: 'Cinzel';">CAST INFO</h3>
+                <div id="cast-display" style="font-size: 14px; line-height: 1.6;">Laden...</div>
             </div>
         </aside>
 
-        <main class="card">
-            <h2 style="font-family: 'Cinzel';">Speelschema Maart 2026</h2>
+        <main class="glass-card">
+            <h2 style="font-family: 'Cinzel'; border-bottom: 1px solid #333; padding-bottom: 10px;">SPEELSCHEMA</h2>
             <div class="calendar" id="calendar"></div>
         </main>
     </div>
 
-    <div class="overlay" id="overlay" onclick="closeModals()"></div>
-
-    <div class="modal" id="book-modal">
-        <h2 id="modal-title">Reserveer je plek</h2>
-        <div style="text-align: center; margin-bottom: 20px;">
-            <div style="display: inline-block; margin: 0 10px;"><span style="color: var(--emerald)">■</span> Beschikbaar</div>
-            <div style="display: inline-block; margin: 0 10px;"><span style="color: #555">■</span> Bezet</div>
-            <div style="display: inline-block; margin: 0 10px;"><span style="color: gold">■</span> VIP</div>
-        </div>
-        <div class="seating-area" id="seating-grid"></div>
-        <br>
-        <button class="magic-btn" onclick="closeModals()">TERUG</button>
+    <div class="modal" id="auth-modal">
+        <h2 style="font-family: 'Cinzel'; color: var(--emerald);">Poort naar Emerald City</h2>
+        <input type="email" id="auth-email" placeholder="E-mail">
+        <input type="password" id="auth-pass" placeholder="Wachtwoord">
+        <button class="btn" onclick="handleAuth()">BEVESTIGEN</button>
+        <p style="font-size: 10px; text-align: center; color: #555; margin-top: 15px;">Gebruik Virtual@gmail.com voor admin toegang.</p>
     </div>
 
-    <div class="modal" id="admin-modal" style="max-height: 80vh; overflow-y: auto;">
-        <h2>Witch Master Dashboard</h2>
-        <label>Achtergrond URL:</label>
-        <input type="text" id="adm-bg">
-        <label>Cast Info:</label>
-        <textarea id="adm-cast" rows="4"></textarea>
-        <button class="magic-btn" onclick="saveGlobal()">UPDATE BASIS</button>
-        <hr style="border-color: #333; margin: 20px 0;">
-        <h3>Show Toevoegen</h3>
+    <div class="modal" id="book-modal" style="width: 650px;">
+        <h2 id="book-date" style="font-family: 'Cinzel'; margin-bottom: 5px;">Reserveer Plaatsen</h2>
+        <p id="book-cast" style="font-size: 12px; color: var(--emerald); margin-bottom: 20px;"></p>
+        <div style="width: 100%; height: 5px; background: white; margin-bottom: 30px; box-shadow: 0 0 10px white;"></div>
+        <div class="seating-grid" id="seating-grid"></div>
+        <br>
+        <button class="btn" style="background: #333; color: white;" onclick="closeAll()">SLUITEN</button>
+    </div>
+
+    <div class="modal" id="admin-modal">
+        <h2 style="font-family: 'Cinzel'; color: gold;">Witch Master Dashboard</h2>
+        <label>Algemene Cast Informatie:</label>
+        <textarea id="adm-cast-global" rows="4"></textarea>
+        <button class="btn" onclick="updateGlobal()">UPDATE CAST</button>
+        <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
+        <h3>Nieuwe Show Plannen</h3>
         <input type="number" id="adm-day" placeholder="Dag (1-31)">
         <input type="text" id="adm-time" placeholder="Tijd (bijv. 19:30)">
-        <button class="magic-btn" style="background: #fff;" onclick="addShow()">SHOW PLANNEN</button>
+        <button class="btn" style="background: white;" onclick="addShow()">VOEG SHOW TOE</button>
     </div>
 
     <script>
@@ -273,38 +135,41 @@
             messagingSenderId: "81908034436",
             appId: "1:81908034436:web:1d56709ad83e7492e4cbd1"
         };
-
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Automatische inlog met jouw gegevens
+        // AUTH LOGIC
+        async function handleAuth() {
+            const e = document.getElementById('auth-email').value;
+            const p = document.getElementById('auth-pass').value;
+            try {
+                await auth.signInWithEmailAndPassword(e, p);
+                location.reload();
+            } catch(err) {
+                try {
+                    await auth.createUserWithEmailAndPassword(e, p);
+                    location.reload();
+                } catch(e2) { alert(e2.message); }
+            }
+        }
+
         auth.onAuthStateChanged(async user => {
             if(user) {
-                document.getElementById('auth-btn').innerText = "UITLOGGEN";
-                document.getElementById('auth-btn').onclick = () => auth.signOut().then(() => location.reload());
-                document.getElementById('user-display').innerText = user.email.split('@')[0];
-                
-                // Als jij inlogt met Virtual@gmail.com krijg je admin
-                if(user.email === "Virtual@gmail.com") {
-                    document.getElementById('admin-link').style.display = 'inline';
-                }
+                document.getElementById('login-nav').innerText = "UITLOGGEN (" + user.email.split('@')[0] + ")";
+                document.getElementById('login-nav').onclick = () => auth.signOut().then(()=>location.reload());
+                document.getElementById('user-title').innerText = "Hallo, " + user.email.split('@')[0];
+                if(user.email === "Virtual@gmail.com") document.getElementById('admin-btn').style.display = 'inline';
                 loadUserTickets(user.uid);
-            } else {
-                // Forceer inlog voor jou
-                auth.signInWithEmailAndPassword("Virtual@gmail.com", "Wickeddemusical.");
             }
-            loadGlobal();
             renderCalendar();
+            loadGlobal();
         });
 
+        // DATA LOADING
         async function loadGlobal() {
             const doc = await db.collection('settings').doc('global').get();
-            if(doc.exists) {
-                const d = doc.data();
-                document.getElementById('cast-info').innerText = d.cast;
-                if(d.bg) document.querySelector('.hero').style.backgroundImage = `url('${d.bg}')`;
-            }
+            if(doc.exists) document.getElementById('cast-display').innerText = doc.data().cast;
         }
 
         async function renderCalendar() {
@@ -315,88 +180,82 @@
             const cal = document.getElementById('calendar');
             cal.innerHTML = '';
             for(let i=1; i<=31; i++) {
-                const hasShow = shows[i];
+                const s = shows[i];
                 cal.innerHTML += `
-                    <div class="day ${hasShow ? 'has-show' : ''}" onclick="openBooking('${hasShow ? hasShow.id : ''}', ${i})">
-                        <span style="color: #666; font-size: 12px;">${i}</span><br>
-                        ${hasShow ? `<b style="color: var(--emerald); font-size: 11px;">${hasShow.time}</b>` : ''}
-                    </div>
-                `;
+                    <div class="day ${s ? 'active' : ''}" onclick="${s ? `openBooking('${s.id}', ${i})` : ''}">
+                        <span class="day-num">${i}</span>
+                        ${s ? `<span class="show-tag">${s.time}</span>` : ''}
+                    </div>`;
             }
         }
 
-        let currentShowId = null;
-        async function openBooking(showId, day) {
-            if(!showId) return;
-            currentShowId = showId;
-            document.getElementById('overlay').style.display = 'block';
-            document.getElementById('book-modal').style.display = 'block';
-            document.getElementById('modal-title').innerText = "Show op " + day + " Maart";
-
-            const showDoc = await db.collection('shows').doc(showId).get();
-            const taken = showDoc.data().takenSeats || [];
+        let activeShow = null;
+        async function openBooking(id, day) {
+            activeShow = id;
+            const doc = await db.collection('shows').doc(id).get();
+            const data = doc.data();
+            
+            document.getElementById('book-date').innerText = day + " MAART 2026";
+            document.getElementById('book-cast').innerText = "Cast: " + (data.cast || "Standaard Cast");
             
             const grid = document.getElementById('seating-grid');
             grid.innerHTML = '';
+            const taken = data.takenSeats || [];
+
             for(let i=1; i<=48; i++) {
-                let status = 'available';
+                let status = 'free';
                 if(taken.includes(i)) status = 'taken';
-                if(i <= 12) status += ' vip'; // Eerste rij is VIP
+                else if(i <= 12) status = 'vip';
                 
                 grid.innerHTML += `<div class="seat ${status}" onclick="bookSeat(${i}, '${status}')">${i}</div>`;
             }
+            openModal('book-modal');
         }
 
         async function bookSeat(num, status) {
-            if(status.includes('taken')) return alert("Deze stoel is al betoverd door iemand anders!");
-            const user = auth.currentUser;
-            
-            await db.collection('shows').doc(currentShowId).update({
+            if(status === 'taken') return;
+            if(!auth.currentUser) return openModal('auth-modal');
+
+            await db.collection('shows').doc(activeShow).update({
                 takenSeats: firebase.firestore.FieldValue.arrayUnion(num)
             });
-            
-            await db.collection('users').doc(user.uid).collection('tickets').add({
+            await db.collection('users').doc(auth.currentUser.uid).collection('tickets').add({
                 seat: num,
-                showId: currentShowId,
-                date: "Maart 2026"
+                date: document.getElementById('book-date').innerText
             });
-            
-            alert("Gefeliciteerd! Stoel " + num + " is van jou!");
+            alert("Spreuk geslaagd! Je hebt stoel " + num + " gereserveerd.");
             location.reload();
         }
 
-        async function saveGlobal() {
-            await db.collection('settings').doc('global').set({
-                bg: document.getElementById('adm-bg').value,
-                cast: document.getElementById('adm-cast').value
-            });
-            alert("De wereld is veranderd!");
-            location.reload();
+        // ADMIN ACTIONS
+        async function updateGlobal() {
+            await db.collection('settings').doc('global').set({ cast: document.getElementById('adm-cast-global').value });
+            alert("Cast bijgewerkt!"); location.reload();
         }
 
         async function addShow() {
-            const day = document.getElementById('adm-day').value;
-            const time = document.getElementById('adm-time').value;
             await db.collection('shows').add({
-                day: parseInt(day),
-                time: time,
+                day: parseInt(document.getElementById('adm-day').value),
+                time: document.getElementById('adm-time').value,
                 takenSeats: []
             });
-            alert("Nieuwe show gepland!");
-            location.reload();
+            alert("Show toegevoegd aan de tijdlijn!"); location.reload();
         }
 
-        function openAdmin() { document.getElementById('overlay').style.display = 'block'; document.getElementById('admin-modal').style.display = 'block'; }
-        function closeModals() { document.querySelectorAll('.modal, .overlay').forEach(m => m.style.display = 'none'); }
-        
+        // UI HELPERS
+        function openModal(id) {
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById(id).style.display = 'block';
+        }
+        function closeAll() {
+            document.querySelectorAll('.modal, .overlay').forEach(el => el.style.display = 'none');
+        }
         async function loadUserTickets(uid) {
             const snap = await db.collection('users').doc(uid).collection('tickets').get();
             const div = document.getElementById('user-tickets');
             if(!snap.empty) {
-                div.innerHTML = '';
-                snap.forEach(doc => {
-                    div.innerHTML += `<div style="color: var(--emerald); margin-bottom: 5px;">🎟️ Stoel ${doc.data().seat}</div>`;
-                });
+                div.innerHTML = '<b>Jouw Tickets:</b><br>';
+                snap.forEach(doc => div.innerHTML += `<div style="color:var(--emerald); margin-top:5px;">• Stoel ${doc.data().seat} (${doc.data().date})</div>`);
             }
         }
     </script>
