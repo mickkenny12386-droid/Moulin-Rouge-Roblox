@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wicked | Official Booking System</title>
+    <title>Wicked | Official Booking</title>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -13,381 +13,204 @@
         :root {
             --emerald: #97d72e;
             --witch-black: #0a0a0a;
-            --magic-glow: 0 0 15px rgba(151, 215, 46, 0.5);
-            /* Rang Kleuren */
-            --r1-blue: #007bff;
-            --r2-yellow: #ffd700;
-            --r3-purple: #6f42c1;
-            --r4-green: #28a745;
-            --r5-red: #dc3545;
-            --r-oranje: #fd7e14;
-            --r-goud: #b8860b;
+            --lvl1: #ffd700; /* Geel */
+            --lvl2: #007bff; /* Blauw */
+            --lvl3: #dc3545; /* Rood */
         }
 
-        body { margin: 0; background: var(--witch-black); color: white; font-family: 'Montserrat', sans-serif; overflow-x: hidden; }
+        body { margin: 0; background: var(--witch-black); color: white; font-family: 'Montserrat', sans-serif; }
 
-        /* Bezem Animatie Loader */
-        .broom-loader {
-            position: fixed;
-            top: 50%;
-            left: -100px;
-            font-size: 30px;
-            animation: fly 3s linear infinite;
-            z-index: 9999;
-            pointer-events: none;
-        }
+        /* Nav & Hero */
+        nav { background: rgba(0,0,0,0.95); padding: 20px 50px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--emerald); }
+        .logo { font-family: 'Cinzel', serif; font-size: 24px; letter-spacing: 3px; }
+        .hero { height: 300px; background: linear-gradient(rgba(0,0,0,0.6), var(--witch-black)), url('https://www.wickedthemusical.co.uk/wp-content/uploads/2023/10/Wicked_Header_Green_Texture.jpg'); background-size: cover; display: flex; align-items: center; justify-content: center; text-align: center; }
 
-        @keyframes fly {
-            0% { left: -50px; transform: translateY(0) rotate(10deg); }
-            50% { transform: translateY(-20px) rotate(-10deg); }
-            100% { left: 110%; transform: translateY(0) rotate(10deg); }
-        }
+        /* Hoofd Layout */
+        .main-grid { max-width: 1400px; margin: -50px auto 50px; display: grid; grid-template-columns: 300px 1fr; gap: 20px; padding: 0 20px; }
+        .glass-card { background: rgba(15, 15, 15, 0.98); border: 1px solid var(--emerald); border-radius: 15px; padding: 25px; }
 
-        /* Navigatie */
-        nav { background: rgba(0,0,0,0.95); padding: 20px 50px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--emerald); box-shadow: var(--magic-glow); position: sticky; top: 0; z-index: 100; }
-        .logo { font-family: 'Cinzel', serif; font-size: 30px; letter-spacing: 4px; color: white; }
-        .nav-links a { color: white; text-decoration: none; margin-left: 25px; font-family: 'Cinzel', serif; transition: 0.3s; cursor: pointer; font-size: 14px; }
-        .nav-links a:hover { color: var(--emerald); text-shadow: var(--magic-glow); }
+        /* Kalender (Zichtbaar voor iedereen) */
+        .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 15px; }
+        .day { aspect-ratio: 1; border: 1px solid #222; background: #111; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 5px; transition: 0.3s; }
+        .day.active { cursor: pointer; border-color: var(--emerald); }
+        .day.active:hover { background: rgba(151, 215, 46, 0.1); }
 
-        /* Luxe Hero Sectie */
-        .hero { height: 450px; background: linear-gradient(to bottom, rgba(0,0,0,0.4), var(--witch-black)), url('https://www.wickedthemusical.co.uk/wp-content/uploads/2023/10/Wicked_Header_Green_Texture.jpg'); background-size: cover; background-position: center; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        .hero h1 { font-family: 'Cinzel', serif; font-size: 5.5rem; margin: 0; letter-spacing: 12px; color: white; text-shadow: 0 0 30px var(--emerald); }
-
-        /* Dashboard Layout */
-        .main-grid { max-width: 1200px; margin: -70px auto 50px; display: grid; grid-template-columns: 320px 1fr; gap: 30px; padding: 0 20px; }
-        .glass-card { background: rgba(15, 15, 15, 0.98); border: 1px solid var(--emerald); border-radius: 20px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.9); transition: 0.4s; }
-
-        /* Kalender */
-        .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 20px; }
-        .day { aspect-ratio: 1/1; border: 1px solid #222; background: #111; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; border-radius: 8px; position: relative; }
-        .day.active { cursor: pointer; border-color: var(--emerald); background: rgba(151, 215, 46, 0.05); }
-        .day.active:hover { background: rgba(151, 215, 46, 0.2); transform: scale(1.05); z-index: 5; }
-        .day-num { font-size: 14px; color: #777; font-weight: bold; }
-        .show-tag { font-size: 11px; font-weight: bold; color: var(--emerald); margin-top: 5px; }
-
-        /* Zaalplan Complex (Gebaseerd op je afbeelding) */
-        .seating-container { margin-top: 30px; text-align: center; }
-        .screen { width: 300px; height: 10px; background: #fff; margin: 0 auto 30px; text-align: center; color: #000; font-size: 10px; font-weight: bold; padding: 5px; border-radius: 2px; }
+        /* HET SEATING PLAN (Horizontaal) */
+        .theater-layout { display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 20px; }
+        .podium { width: 300px; background: white; color: black; font-weight: bold; text-align: center; padding: 10px; margin-bottom: 30px; letter-spacing: 5px; }
         
-        /* Vakken */
-        .seating-area { display: flex; flex-direction: column; align-items: center; gap: 20px; }
-        .block-row { display: flex; gap: 20px; justify-content: center; }
-        .block { display: flex; flex-direction: column; gap: 5px; border: 1px solid #333; padding: 10px; border-radius: 5px; }
-        .seat-row { display: flex; gap: 4px; justify-content: center; }
-
-        /* Stoelen */
-        .seat {
-            width: 16px;
-            height: 16px;
-            background: #444;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: rgba(255,255,255,0.7);
-            transition: 0.2s;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
+        .main-seating { display: flex; justify-content: center; align-items: flex-start; gap: 30px; }
         
-        .seat.available.r1 { background: var(--r1-blue); color: #fff; }
-        .seat.available.r2 { background: var(--r2-yellow); color: #000; }
-        .seat.available.r3 { background: var(--r3-purple); color: #fff; }
-        .seat.available.r4 { background: var(--r4-green); color: #fff; }
-        .seat.available.r5 { background: var(--r5-red); color: #fff; }
-        .seat.available.r_oranje { background: var(--r-oranje); color: #000; }
-        .seat.available.r_goud { background: var(--r-goud); color: #000; box-shadow: 0 0 5px var(--r-goud); }
+        .side-block { display: flex; flex-direction: column; gap: 4px; margin-top: 60px; }
+        .center-block { display: flex; flex-direction: column; gap: 4px; }
+        .back-block { margin-top: 40px; display: flex; flex-direction: column; gap: 4px; align-items: center; }
 
-        .seat.taken { background: #555; color: #888; cursor: not-allowed; opacity: 0.6; }
-        .seat.admin-selected { border: 2px solid white; box-shadow: 0 0 10px white; transform: scale(1.1); }
-        .seat.blocked { background: #cc0000; cursor: not-allowed; }
-
-        /* Modals */
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0f0f0f; padding: 40px; border: 2px solid var(--emerald); z-index: 1000; width: 90%; max-width: 900px; border-radius: 20px; box-shadow: 0 0 100px rgba(0,0,0,1); max-height: 90vh; overflow-y: auto; }
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 900; backdrop-filter: blur(8px); }
+        .row { display: flex; gap: 3px; justify-content: center; }
+        .seat { width: 12px; height: 12px; border-radius: 50%; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); }
         
-        input, textarea, select { width: 100%; padding: 14px; margin: 12px 0; background: #1a1a1a; border: 1px solid var(--emerald); color: white; border-radius: 8px; font-family: inherit; }
-        .btn { background: var(--emerald); color: black; border: none; padding: 18px; width: 100%; font-weight: bold; cursor: pointer; border-radius: 8px; text-transform: uppercase; letter-spacing: 2px; font-family: 'Cinzel', serif; transition: 0.3s; }
-        .btn:hover { box-shadow: var(--magic-glow); transform: scale(1.02); }
-        .admin-only { color: gold; font-weight: bold; cursor: pointer; border: 1px solid gold; padding: 5px 10px; border-radius: 5px; }
-        .legend-item { display: inline-block; margin: 0 10px; font-size: 12px; }
-        .legend-color { display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 5px; }
+        .s1 { background: var(--lvl1); } /* Geel */
+        .s2 { background: var(--lvl2); } /* Blauw */
+        .s3 { background: var(--lvl3); } /* Rood */
+        .seat.taken { background: #444 !important; cursor: not-allowed; }
 
+        /* Modal styling */
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #0a0a0a; border: 2px solid var(--emerald); z-index: 1000; width: 95%; max-width: 1100px; border-radius: 20px; padding: 30px; max-height: 90vh; overflow-y: auto; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 900; }
+        
+        .btn { background: var(--emerald); color: black; border: none; padding: 12px 20px; font-weight: bold; cursor: pointer; border-radius: 5px; text-transform: uppercase; }
     </style>
 </head>
 <body>
 
-    <div class="broom-loader">🧹</div>
     <div class="overlay" id="overlay" onclick="closeAll()"></div>
 
     <nav>
-        <div class="logo">Wicked <span style="color: var(--emerald);">Offical</span></div>
+        <div class="logo">WICKED ROBLOX</div>
         <div class="nav-links">
-            <a onclick="location.reload()">HOME</a>
-            <a id="admin-link" class="admin-only" style="display:none;" onclick="openAdmin()">WITCH MASTER</a>
-            <a id="login-btn" onclick="openAuth()" style="cursor:pointer">INLOGGEN</a>
+            <button id="admin-btn" style="display:none; background: gold; border:none; padding: 8px; margin-right: 10px; cursor:pointer;" onclick="openAdmin()">WITCH MASTER</button>
+            <button class="btn" id="login-nav" onclick="openModal('auth-modal')">LOGIN</button>
         </div>
     </nav>
 
-    <section class="hero">
+    <div class="hero">
         <h1>MARCH 2026</h1>
-        <p style="letter-spacing: 10px; color: var(--emerald); font-weight: 300;">BEWITCHING PERFORMANCES DAILY</p>
-    </section>
+    </div>
 
     <div class="main-grid">
         <aside>
             <div class="glass-card">
-                <h3 id="user-display">Welkom, Reiziger</h3>
-                <div id="user-tickets">Log in om je tickets te zien.</div>
-            </div>
-            <br>
-            <div class="glass-card">
-                <h3 style="color: var(--emerald)">HUIDIGE CAST</h3>
-                <div id="cast-info">Cast wordt geladen...</div>
+                <h3 id="user-title">Gastenlijst</h3>
+                <div id="user-tickets">Log in om te boeken.</div>
             </div>
         </aside>
 
         <main class="glass-card">
-            <h2 style="font-family: 'Cinzel'; margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 15px;">SPEELSCHEMA <span style="font-size: 0.8rem; color: #555;">(Klik op een tijd voor tickets)</span></h2>
+            <h2>SPEELSCHEMA MAART</h2>
             <div class="calendar" id="calendar"></div>
         </main>
     </div>
 
     <div class="modal" id="book-modal">
-        <h2 id="modal-title">Reserveer Plaatsen</h2>
-        <p id="modal-cast" style="font-size: 13px; color: var(--emerald);"></p>
-        
-        <div style="text-align: center; margin: 20px 0; border-bottom: 1px solid #333; padding-bottom: 10px;">
-            <div class="legend-item"><span class="legend-color" style="background:var(--r1-blue);"></span>1e Rang</div>
-            <div class="legend-item"><span class="legend-color" style="background:var(--r2-yellow);"></span>2e Rang</div>
-            <div class="legend-item"><span class="legend-color" style="background:var(--r3-purple);"></span>3e Rang</div>
-            <div class="legend-item"><span class="legend-color" style="background:var(--r4-green);"></span>4e Rang</div>
-            <div class="legend-item"><span class="legend-color" style="background:var(--r5-red);"></span>5e Rang</div>
-            <div class="legend-item"><span class="legend-color" style="background:var(--r_goud);"></span>Gold</div>
-        </div>
-
-        <div class="seating-container">
-            <div class="screen">PODIUM</div>
-            <div class="seating-area" id="seating-grid"></div>
-        </div>
-        <br>
-        <div style="display: flex; gap: 10px;">
-            <button class="btn" style="background: #222; color: white;" onclick="closeAll()">TERUG</button>
-            <div id="admin-controls" style="display:none; flex-grow: 1;">
-                <button class="btn" style="background: gold;" onclick="adminBlockSeats()">BLOKKEER GESELECTEERD</button>
+        <div class="theater-layout">
+            <div class="podium">PODIUM</div>
+            
+            <div class="main-seating">
+                <div class="side-block" id="left-side"></div>
+                <div class="center-block" id="center-main"></div>
+                <div class="side-block" id="right-side"></div>
             </div>
+
+            <div class="back-block" id="back-ring"></div>
         </div>
     </div>
 
-    <div class="modal" id="admin-modal">
-        <h2 style="font-family: 'Cinzel'; color: gold;">Witch Master Dashboard</h2>
-        <textarea id="adm-cast-global" rows="4" placeholder="Algemene Cast Lijst..."></textarea>
-        <button class="btn" onclick="updateGlobal()">UPDATE CAST INFO</button>
-        <hr style="border: 0; border-top: 1px solid #333; margin: 25px 0;">
-        <h3>Nieuwe Show Plannen</h3>
-        <input type="number" id="adm-day" placeholder="Dag (1-31)">
-        <input type="text" id="adm-time" placeholder="Tijd (bijv. 19:30)">
-        <button class="btn" style="background: white;" onclick="addShow()">SHOW TOEVOEGEN</button>
-    </div>
-
-    <div class="modal" id="auth-modal" style="width: 400px;">
-        <h3>Inloggen</h3>
-        <input type="email" id="auth-email" placeholder="E-mail">
-        <input type="password" id="auth-pass" placeholder="Wachtwoord">
+    <div class="modal" id="auth-modal" style="width: 300px;">
+        <input type="email" id="auth-email" placeholder="Email" style="width:90%; margin-bottom:10px; padding:10px;">
+        <input type="password" id="auth-pass" placeholder="Wachtwoord" style="width:90%; margin-bottom:10px; padding:10px;">
         <button class="btn" onclick="handleAuth()">BETREED OZ</button>
     </div>
 
     <script>
-        // JE FIREBASE CONFIGURATIE
+        // FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyCCm6vZCE1KH1SnclU7NHF2BmeOUW_suio",
             authDomain: "wickedrobloxofficial.firebaseapp.com",
-            databaseURL: "https://wickedrobloxofficial-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "wickedrobloxofficial",
             storageBucket: "wickedrobloxofficial.firebasestorage.app",
             messagingSenderId: "107452125942",
             appId: "1:107452125942:web:ca9c1222469fa41b1992d7"
         };
+
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        const ADMIN_EMAIL = "Virtual@gmail.com";
         let activeShowId = null;
-        let selectedSeatsForAdmin = [];
 
-        // Core Init
+        // AUTH & SHOWS LADEN
         auth.onAuthStateChanged(user => {
             if(user) {
-                document.getElementById('display-name').innerText = user.email.split('@')[0];
-                document.getElementById('login-btn').innerText = "UITLOGGEN";
-                document.getElementById('login-btn').onclick = () => auth.signOut().then(()=>location.reload());
-                if(user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) document.getElementById('admin-link').style.display = 'inline-block';
-                loadUserTickets(user.uid);
+                document.getElementById('login-nav').innerText = "LOGOUT";
+                if(user.email === "virtual@gmail.com") document.getElementById('admin-btn').style.display = 'inline';
             }
-            renderCalendar();
-            loadGlobal();
+            renderCalendar(); // Deze functie staat nu BUITEN de user check zodat iedereen shows ziet
         });
 
-        // Data & Calendar
-        async function loadGlobal() {
-            const doc = await db.collection('settings').doc('global').get();
-            if(doc.exists) document.getElementById('cast-info').innerText = doc.data().cast;
-        }
-
         async function renderCalendar() {
-            const snap = await db.collection('shows').get();
+            const cal = document.getElementById('calendar');
+            cal.innerHTML = 'Laden...';
+            
+            // Haal shows op uit Firestore
+            const snap = await db.collection('shows').orderBy('day').get();
             const shows = {};
             snap.forEach(doc => shows[doc.data().day] = {id: doc.id, ...doc.data()});
             
-            const cal = document.getElementById('calendar');
             cal.innerHTML = '';
             for(let i=1; i<=31; i++) {
+                const s = shows[i];
                 cal.innerHTML += `
-                    <div class="day ${shows[i] ? 'active' : ''}" onclick="${shows[i] ? `openBooking('${shows[i].id}', ${i})` : ''}">
-                        <span class="day-num">${i}</span>
-                        ${shows[i] ? `<span class="show-tag">${shows[i].time}</span>` : ''}
+                    <div class="day ${s ? 'active' : ''}" onclick="${s ? `openBooking('${s.id}')` : ''}">
+                        <span style="font-size:12px;">${i}</span>
+                        ${s ? `<b style="color:var(--emerald); font-size:10px;">${s.time}</b>` : ''}
                     </div>`;
             }
         }
 
-        // Definieer de complexe zaalstructuur
-        // 'rows' is aantal rijen in vak, 'seatsPerRow' is aantal stoelen, 'rang' is rang-kleur
-        const zaalStructuur = [
-            // Voorste Blok
-            { type: 'block-front', rang: 'r2', rows: 2, seatsPerRow: 20 }, 
-            { type: 'block-front', rang: 'r_goud', rows: 3, seatsPerRow: 22 }, // VIP rij 3-5
-            { type: 'block-front', rang: 'r2', rows: 14, seatsPerRow: 24 }, // rij 6-20
-            
-            // Tussenruimte / Loze ruimte
-            
-            // Achterste Blok (Midden)
-            { type: 'block-back-mid', rang: 'r2', rows: 4, seatsPerRow: 20 },
-            { type: 'block-back-mid', rang: 'r3', rows: 6, seatsPerRow: 18 }, // rij 5-10
-
-            // Zijkanten
-            { type: 'side-left', rang: 'r4', rows: 8, seatsPerRow: 4, transform: 'rotate(-30deg)' },
-            { type: 'side-right', rang: 'r4', rows: 8, seatsPerRow: 4, transform: 'rotate(30deg)' },
-
-            // Buitenste Ringen (Achterkant)
-            { type: 'ring-back', rang: 'r5', rows: 2, seatsPerRow: 40, curve: 'bow' }, // Helemaal achteraan
-        ];
-
-        async function openBooking(showId, day) {
-            activeShowId = showId;
-            selectedSeatsForAdmin = [];
-            const doc = await db.collection('shows').doc(showId).get();
-            const data = doc.data();
-            const taken = data.takenSeats || [];
-
-            document.getElementById('overlay').style.display = 'block';
-            document.getElementById('book-modal').style.display = 'block';
-            document.getElementById('modal-title').innerText = `${day} Maart - Complex Zaalplan`;
-            document.getElementById('modal-cast').innerText = `Show Cast: ${data.cast || 'Wicked Company'}`;
-
-            if(auth.currentUser?.email === ADMIN_EMAIL) document.getElementById('admin-controls').style.display = 'block';
-
-            const grid = document.getElementById('seating-grid');
-            grid.innerHTML = '';
-            let currentSeatId = 1;
-
-            // Bouw de zaal op gebaseerd op de complexe structuur
-            zaalStructuur.forEach(blok => {
-                const blockDiv = document.createElement('div');
-                blockDiv.className = `block ${blok.type}`;
-                if(blok.transform) blockDiv.style.transform = blok.transform;
-
-                for(let r=1; r<=blok.rows; r++) {
-                    const rowDiv = document.createElement('div');
-                    rowDiv.className = 'seat-row';
-
-                    for(let s=1; s<=blok.seatsPerRow; s++) {
-                        const isTaken = taken.includes(currentSeatId);
-                        
-                        const seatDiv = document.createElement('div');
-                        seatDiv.id = `seat-${currentSeatId}`;
-                        seatDiv.className = `seat available ${blok.rang} ${isTaken ? 'taken' : ''}`;
-                        seatDiv.innerText = s; // Toon stoelnummer binnen rij
-                        
-                        seatDiv.onclick = (e) => handleSeatClick(e, currentSeatId, isTaken);
-                        
-                        rowDiv.appendChild(seatDiv);
-                        currentSeatId++;
-                    }
-                    blockDiv.appendChild(rowDiv);
-                }
-                grid.appendChild(blockDiv);
-            });
+        function openBooking(id) {
+            activeShowId = id;
+            buildSeating();
+            openModal('book-modal');
         }
 
-        // Stoelklik handler (splitst admin en gebruiker)
-        function handleSeatClick(e, seatId, isTaken) {
-            if(auth.currentUser?.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-                // Admin mode: selecteren voor blokkeren
-                const seatEl = e.currentTarget;
-                seatEl.classList.toggle('admin-selected');
-                
-                if(selectedSeatsForAdmin.includes(seatId)) {
-                    selectedSeatsForAdmin = selectedSeatsForAdmin.filter(s => s !== seatId);
-                } else {
-                    selectedSeatsForAdmin.push(seatId);
+        // SEATING PLAN GENERATOR (Horizontaal)
+        function buildSeating() {
+            const left = document.getElementById('left-side');
+            const center = document.getElementById('center-main');
+            const right = document.getElementById('right-side');
+            const back = document.getElementById('back-ring');
+
+            left.innerHTML = ''; center.innerHTML = ''; right.innerHTML = ''; back.innerHTML = '';
+
+            // Middenblok (Geel - Price Level 1)
+            for(let r=0; r<20; r++) {
+                const row = document.createElement('div'); row.className = 'row';
+                for(let s=0; s<18; s++) row.innerHTML += `<div class="seat s1" onclick="bookSeat(${r*100+s})"></div>`;
+                center.appendChild(row);
+            }
+
+            // Zijblokken (Blauw/Geel - Price Level 2/1)
+            for(let r=0; r<12; r++) {
+                const rowL = document.createElement('div'); rowL.className = 'row';
+                const rowR = document.createElement('div'); rowR.className = 'row';
+                for(let s=0; s<5; s++) {
+                    rowL.innerHTML += `<div class="seat ${s<2 ? 's2' : 's1'}" onclick="bookSeat(${r*10+s})"></div>`;
+                    rowR.innerHTML += `<div class="seat ${s>2 ? 's2' : 's1'}" onclick="bookSeat(${r*50+s})"></div>`;
                 }
-            } else {
-                // Gebruiker mode: reserveren
-                if(isTaken) return alert("Helaas, deze magische stoel is al bezet.");
-                if(!auth.currentUser) return openAuth();
-                reserveSeat(seatId);
+                left.appendChild(rowL); right.appendChild(rowR);
+            }
+
+            // Achterste Ringen (Rood - Price Level 3)
+            for(let r=0; r<4; r++) {
+                const row = document.createElement('div'); row.className = 'row';
+                for(let s=0; s<40; s++) row.innerHTML += `<div class="seat s3" onclick="bookSeat(${r*200+s})"></div>`;
+                back.appendChild(row);
             }
         }
 
-        async function reserveSeat(num) {
-            if(confirm(`Wilt u stoel ${num} reserveren voor uw reis naar Oz?`)) {
-                try {
-                    await db.collection('shows').doc(activeShowId).update({
-                        takenSeats: firebase.firestore.FieldValue.arrayUnion(num)
-                    });
-                    await db.collection('users').doc(auth.currentUser.uid).collection('tickets').add({
-                        seatId: num,
-                        showId: activeShowId,
-                        date: document.getElementById('modal-title').innerText,
-                        timestamp: new Date()
-                    });
-                    alert("Gereserveerd! Uw ticket wacht in de Emerald City.");
-                    location.reload();
-                } catch(e) { alert("Oei, er ging iets mis bij het binden van de spreuk."); }
-            }
-        }
-
-        // Admin Actions
-        async function adminBlockSeats() {
-            if(!selectedSeatsForAdmin.length) return alert("Selecteer eerst de stoelen die u wilt blokkeren, Witch Master.");
+        async function handleAuth() {
+            const e = document.getElementById('auth-email').value;
+            const p = document.getElementById('auth-pass').value;
             try {
-                await db.collection('shows').doc(activeShowId).update({
-                    takenSeats: firebase.firestore.FieldValue.arrayUnion(...selectedSeatsForAdmin)
-                });
-                alert("Stoelen succesvol geblokkeerd voor het publiek.");
+                await auth.signInWithEmailAndPassword(e, p);
                 location.reload();
-            } catch(e) { alert("Kon de stoelen niet blokkeren."); }
-        }
-
-        // ... rest van de admin en helper functies (auth, updateGlobal, etc) blijven hetzelfde ...
-        // UI Helpers
-        function openAdmin() { document.getElementById('overlay').style.display='block'; document.getElementById('admin-modal').style.display='block'; }
-        function openAuth() { document.getElementById('overlay').style.display='block'; document.getElementById('auth-modal').style.display='block'; }
-        function closeAll() { document.querySelectorAll('.modal, .overlay').forEach(el => el.style.display='none'); }
-        async function loadUserTickets(uid) {
-            const snap = await db.collection('users').doc(uid).collection('tickets').get();
-            const div = document.getElementById('user-tickets');
-            if(!snap.empty) {
-                div.innerHTML = '<b>Jouw Tickets:</b>';
-                snap.forEach(doc => div.innerHTML += `<div>• Stoel ${doc.data().seatId}</div>`);
+            } catch {
+                await auth.createUserWithEmailAndPassword(e, p);
+                location.reload();
             }
         }
-        async function updateGlobal() { await db.collection('settings').doc('global').set({ cast: document.getElementById('adm-cast-global').value }); alert("De wereld is veranderd!"); location.reload(); }
-        async function addShow() { await db.collection('shows').add({ day: parseInt(document.getElementById('adm-day').value), time: document.getElementById('adm-time').value, takenSeats: [], cast: 'Wicked Company' }); alert("Tijdlijn bijgewerkt!"); location.reload(); }
-        async function handleAuth() { const e = document.getElementById('auth-email').value; const p = document.getElementById('auth-pass').value; try { await auth.signInWithEmailAndPassword(e, p); } catch { const r = await auth.createUserWithEmailAndPassword(e, p); await db.collection('users').doc(r.user.uid).set({email: e}); } location.reload(); }
-    
+
+        function openModal(id) { document.getElementById('overlay').style.display='block'; document.getElementById(id).style.display='block'; }
+        function closeAll() { document.querySelectorAll('.modal, .overlay').forEach(el => el.style.display='none'); }
     </script>
 </body>
 </html>
