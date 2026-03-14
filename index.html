@@ -1,180 +1,269 @@
-<style>
-    /* ... (bestaande navigatie en hero stijlen blijven gelijk) ... */
-
-    .theater-container {
-        position: relative;
-        width: 800px;
-        height: 650px;
-        margin: 0 auto;
-        background: #050505;
-        border-radius: 50% 50% 0 0;
-        overflow: hidden;
-        padding-top: 50px;
-    }
-
-    .podium-box {
-        width: 200px;
-        background: white;
-        color: black;
-        font-weight: bold;
-        text-align: center;
-        padding: 10px;
-        margin: 0 auto 40px;
-        letter-spacing: 5px;
-        z-index: 10;
-        position: relative;
-    }
-
-    /* Stoel styling */
-    .seat {
-        position: absolute;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        cursor: pointer;
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .seat:hover {
-        transform: scale(1.5) !important;
-        box-shadow: 0 0 8px white;
-        z-index: 100;
-    }
-
-    .seat.selected {
-        border: 2px solid white;
-        box-shadow: 0 0 10px var(--emerald);
-    }
-
-    .seat.taken {
-        background: #333 !important;
-        cursor: not-allowed;
-    }
-
-    /* Kleuren uit je afbeelding */
-    .s1 { background: #ffd700; } /* Geel */
-    .s2 { background: #007bff; } /* Blauw */
-    .s3 { background: #dc3545; } /* Rood */
-
-    .booking-panel {
-        text-align: center;
-        margin-top: 20px;
-        border-top: 1px solid #333;
-        padding-top: 20px;
-    }
-</style>
-
-<div class="modal" id="book-modal">
-    <div class="theater-container" id="theater-arena">
-        <div class="podium-box">PODIUM</div>
-        </div>
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wicked Official | London</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     
-    <div class="booking-panel">
-        <p id="selected-info">Geen stoel geselecteerd</p>
-        <button class="btn" id="confirm-btn" disabled onclick="processBooking()">RESERVEER NU</button>
-        <button class="btn" style="background:#222; color:white;" onclick="closeAll()">ANNULEREN</button>
+    <style>
+        :root { --emerald: #97d72e; --witch-black: #0a0a0a; --glass: rgba(20, 20, 20, 0.95); }
+        body { margin: 0; background: var(--witch-black); color: white; font-family: 'Montserrat', sans-serif; overflow-x: hidden; }
+        
+        /* Navigatie */
+        nav { background: black; padding: 15px 50px; display: flex; flex-direction: column; align-items: center; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 1000; }
+        .nav-logo { font-family: 'Cinzel', serif; font-size: 32px; letter-spacing: 5px; margin-bottom: 10px; cursor: pointer; }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a { color: var(--emerald); text-decoration: none; font-weight: 600; font-size: 13px; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
+        .nav-links a:hover { color: white; }
+
+        /* Hero */
+        .hero-banner { height: 250px; background: linear-gradient(rgba(0,0,0,0.5), var(--witch-black)), url('https://www.wickedthemusical.co.uk/wp-content/uploads/2023/10/Wicked_Header_Green_Texture.jpg'); background-size: cover; background-position: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .hero-banner h1 { font-family: 'Cinzel', serif; font-size: 2.5rem; letter-spacing: 3px; margin: 0; }
+
+        /* Content Secties */
+        .container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+        .section-box { display: none; background: var(--glass); border: 1px solid #333; padding: 40px; border-radius: 5px; }
+        .section-box.active { display: block; }
+
+        /* Kalender & Rangen */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 20px; }
+        .day { border: 1px solid #444; padding: 15px; text-align: center; min-height: 80px; position: relative; }
+        .day.has-show { border-color: var(--emerald); cursor: pointer; }
+        .rang-selector { display: flex; gap: 20px; justify-content: center; margin-top: 30px; }
+        .rang-card { background: #1a1a1a; padding: 20px; border: 1px solid var(--emerald); width: 150px; text-align: center; cursor: pointer; transition: 0.3s; }
+        .rang-card:hover { transform: translateY(-5px); background: var(--emerald); color: black; }
+
+        /* Formulieren */
+        input, textarea, select { width: 100%; padding: 12px; margin: 10px 0; background: #111; border: 1px solid #444; color: white; border-radius: 4px; box-sizing: border-box; }
+        .btn { background: var(--emerald); color: black; padding: 15px 30px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 100%; }
+
+        /* Admin Styles */
+        #admin-panel { background: #000; border: 2px solid gold; padding: 20px; margin-top: 20px; display: none; }
+        .admin-tab { border-bottom: 1px solid #333; margin-bottom: 20px; padding-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-logo" onclick="showSection('theshow')">WICKED</div>
+        <div class="nav-links">
+            <a onclick="showSection('theshow')">The Show</a>
+            <a onclick="showSection('yourvisit')">Your Visit</a>
+            <a onclick="showSection('audities')">Audities</a>
+            <a onclick="showSection('newsletter')">Newsletter</a>
+            <a id="admin-nav" style="display:none; color:gold;" onclick="showSection('admin')">Admin Panel</a>
+        </div>
+    </nav>
+
+    <div class="hero-banner">
+        <h1 id="hero-title">THE SHOW</h1>
+        <p id="hero-subtitle">Official Wicked London Tickets</p>
     </div>
-</div>
 
-<script>
-    let selectedSeatId = null;
-
-    function buildSeating() {
-        const arena = document.getElementById('theater-arena');
-        // Verwijder oude stoelen behalve het podium
-        const seats = arena.querySelectorAll('.seat');
-        seats.forEach(s => s.remove());
-
-        const centerX = 400; // Midden van de container
-        const centerY = 50;  // Startpunt boog (bij het podium)
-
-        // we bouwen 25 rijen in een boogvorm
-        for (let row = 1; row <= 25; row++) {
-            const radius = 100 + (row * 18); // Elke rij staat verder weg
-            const seatCount = 15 + (row * 1.5); // Meer stoelen in de achterste rijen
-            const angleStep = (Math.PI * 0.8) / seatCount; // Hoe breed de boog is
-            const startAngle = Math.PI * 1.1; 
-
-            for (let i = 0; i < seatCount; i++) {
-                const angle = startAngle + (i * angleStep);
-                const x = centerX + radius * Math.cos(angle);
-                const y = centerY + radius * Math.sin(angle);
-
-                const seat = document.createElement('div');
-                const seatId = `R${row}S${i}`;
-                
-                // Bepaal kleur op basis van rij (zoals op de plattegrond)
-                let type = 's1';
-                if (row > 22) type = 's3'; // Achterste rijen rood
-                else if (i < 3 || i > seatCount - 4) type = 's2'; // Zijkanten blauw
-                
-                seat.className = `seat ${type}`;
-                seat.style.left = `${x}px`;
-                seat.style.top = `${y}px`;
-                seat.style.transform = `rotate(${angle + Math.PI/2}rad)`;
-                
-                seat.onclick = () => selectSeat(seat, seatId);
-                arena.appendChild(seat);
-            }
-        }
-    }
-
-    function selectSeat(element, id) {
-        if (element.classList.contains('taken')) return;
-
-        // Reset vorige selectie
-        const prev = document.querySelector('.seat.selected');
-        if (prev) prev.classList.remove('selected');
-
-        element.classList.add('selected');
-        selectedSeatId = id;
-        document.getElementById('selected-info').innerText = `Geselecteerde stoel: ${id}`;
-        document.getElementById('confirm-btn').disabled = false;
-    }
-
-    async function processBooking() {
-        if (!auth.currentUser) return alert("Je moet ingelogd zijn om te reserveren.");
+    <div class="container">
         
-        try {
-            // Update Firestore
-            await db.collection('shows').doc(activeShowId).update({
-                takenSeats: firebase.firestore.FieldValue.arrayUnion(selectedSeatId)
-            });
+        <section id="theshow" class="section-box active">
+            <h2 id="current-month">MARCH 2026</h2>
+            <div class="calendar-grid" id="calendar"></div>
             
-            alert("Magisch! Je stoel is gereserveerd.");
-            closeAll();
-            renderCalendar();
-        } catch (error) {
-            console.error("Booking error:", error);
-            alert("Er ging iets mis met de spreuk. Probeer het opnieuw.");
-        }
-    }
+            <div id="booking-step" style="display:none; margin-top:40px; text-align:center; border-top:1px solid #333; padding-top:20px;">
+                <h3>Selecteer je Rang</h3>
+                <div class="rang-selector">
+                    <div class="rang-card" onclick="selectRang(1)"><h4>Rang 1</h4><p>€85.00</p></div>
+                    <div class="rang-card" onclick="selectRang(2)"><h4>Rang 2</h4><p>€65.00</p></div>
+                    <div class="rang-card" onclick="selectRang(3)"><h4>Rang 3</h4><p>€45.00</p></div>
+                </div>
+            </div>
+        </section>
 
-    // Zorg dat de shows zichtbaar blijven voor iedereen
-    async function renderCalendar() {
-        const cal = document.getElementById('calendar');
-        cal.innerHTML = 'Magie wordt geladen...';
-        
-        try {
-            const snap = await db.collection('shows').orderBy('day').get();
+        <section id="yourvisit" class="section-box">
+            <h2>Jouw Tickets</h2>
+            <div id="my-tickets">Log in om je tickets te bekijken.</div>
+        </section>
+
+        <section id="audities" class="section-box">
+            <h2>Audition Form</h2>
+            <div id="audition-form-container">
+                <label>Full Name</label>
+                <input type="text" id="aud-name" placeholder="Whats your name.">
+                
+                <label>Age</label>
+                <input type="number" id="aud-age" placeholder="How old are you?">
+                
+                <label>Discord Username</label>
+                <input type="text" id="aud-discord" placeholder="Whats your discord name.">
+                
+                <label>Experience</label>
+                <textarea id="aud-exp" rows="4" placeholder="Whats your experience."></textarea>
+                
+                <label>Availability</label>
+                <select id="aud-avail">
+                    <option value="yes">Yes, I can attend every rehearsal</option>
+                    <option value="no">No, I have some restrictions</option>
+                </select>
+                
+                <button class="btn" onclick="submitAudition()">SUBMIT AUDITION</button>
+            </div>
+        </section>
+
+        <section id="newsletter" class="section-box">
+            <h2>Laatste Nieuws</h2>
+            <div id="news-feed">Geen nieuws beschikbaar.</div>
+        </section>
+
+        <section id="admin" class="section-box" style="border-color: gold;">
+            <h2 style="color:gold;">WITCH MASTER PANEL</h2>
+            
+            <div class="admin-tab">
+                <h3>Show Toevoegen</h3>
+                <input type="number" id="adm-day" placeholder="Dag (bijv. 14)">
+                <input type="text" id="adm-time" placeholder="Tijd (bijv. 19:30)">
+                <button class="btn" style="background:white;" onclick="addShow()">VOEG SHOW TOE</button>
+            </div>
+
+            <div class="admin-tab">
+                <h3>Newsletter Plaatsen</h3>
+                <input type="text" id="news-title" placeholder="Titel van bericht">
+                <textarea id="news-content" placeholder="Inhoud van het nieuwsbericht..."></textarea>
+                <button class="btn" style="background:white;" onclick="postNews()">PLAATS NIEUWS</button>
+            </div>
+
+            <div class="admin-tab">
+                <h3>Ingekomen Audities</h3>
+                <div id="admin-auditions-list">Laden...</div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // FIREBASE CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyCCm6vZCE1KH1SnclU7NHF2BmeOUW_suio",
+            authDomain: "wickedrobloxofficial.firebaseapp.com",
+            projectId: "wickedrobloxofficial",
+            storageBucket: "wickedrobloxofficial.firebasestorage.app",
+            messagingSenderId: "107452125942",
+            appId: "1:107452125942:web:ca9c1222469fa41b1992d7"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        let currentActiveShow = null;
+
+        // AUTH CHECK
+        auth.onAuthStateChanged(user => {
+            if(user && user.email === "virtual@gmail.com") {
+                document.getElementById('admin-nav').style.display = 'block';
+                loadAdminAuditions();
+            }
+            loadCalendar();
+            loadNews();
+        });
+
+        // NAVIGATIE LOGICA
+        function showSection(id) {
+            document.querySelectorAll('.section-box').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.getElementById('hero-title').innerText = id.toUpperCase().replace('THE', 'THE ');
+        }
+
+        // SHOWS & KALENDER
+        async function loadCalendar() {
+            const cal = document.getElementById('calendar');
             cal.innerHTML = '';
-            
-            // Bouw de kalenderdagen 1 t/m 31
-            for (let i = 1; i <= 31; i++) {
-                const show = snap.docs.find(d => d.data().day == i);
-                const dayEl = document.createElement('div');
-                dayEl.className = `day ${show ? 'active' : ''}`;
-                
-                if (show) {
-                    dayEl.innerHTML = `<span style="font-size:12px;">${i}</span><b style="color:var(--emerald); font-size:10px;">${show.data().time}</b>`;
-                    dayEl.onclick = () => openBooking(show.id);
-                } else {
-                    dayEl.innerHTML = `<span style="font-size:12px; color:#444;">${i}</span>`;
-                }
-                cal.appendChild(dayEl);
+            const snap = await db.collection('shows').get();
+            const shows = {};
+            snap.forEach(doc => shows[doc.data().day] = doc.data());
+
+            for(let i=1; i<=31; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = `day ${shows[i] ? 'has-show' : ''}`;
+                dayDiv.innerHTML = `<b>${i}</b><br>${shows[i] ? shows[i].time : ''}`;
+                if(shows[i]) dayDiv.onclick = () => {
+                    currentActiveShow = shows[i];
+                    document.getElementById('booking-step').style.display = 'block';
+                    window.scrollTo(0, document.body.scrollHeight);
+                };
+                cal.appendChild(dayDiv);
             }
-        } catch (e) {
-            cal.innerHTML = "Fout bij laden schema.";
         }
-    }
-</script>
+
+        async function addShow() {
+            const day = document.getElementById('adm-day').value;
+            const time = document.getElementById('adm-time').value;
+            await db.collection('shows').add({ day: parseInt(day), time: time });
+            alert("Show toegevoegd!");
+            loadCalendar();
+        }
+
+        // AUDITIES
+        async function submitAudition() {
+            const data = {
+                name: document.getElementById('aud-name').value,
+                age: document.getElementById('aud-age').value,
+                discord: document.getElementById('aud-discord').value,
+                experience: document.getElementById('aud-exp').value,
+                availability: document.getElementById('aud-avail').value,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            await db.collection('auditions').add(data);
+            alert("Audition submitted successfully! Good luck.");
+            showSection('theshow');
+        }
+
+        async function loadAdminAuditions() {
+            const list = document.getElementById('admin-auditions-list');
+            const snap = await db.collection('auditions').orderBy('timestamp', 'desc').get();
+            list.innerHTML = '';
+            snap.forEach(doc => {
+                const d = doc.data();
+                list.innerHTML += `
+                    <div style="background:#222; padding:10px; margin-bottom:10px; border-left:4px solid var(--emerald);">
+                        <b>${d.name} (${d.age})</b> - Discord: ${d.discord}<br>
+                        <i>Experience:</i> ${d.experience}<br>
+                        <i>Attend Rehearsals:</i> ${d.availability}
+                    </div>`;
+            });
+        }
+
+        // NEWSLETTER
+        async function postNews() {
+            const title = document.getElementById('news-title').value;
+            const content = document.getElementById('news-content').value;
+            await db.collection('news').add({
+                title: title,
+                content: content,
+                date: new Date().toLocaleDateString()
+            });
+            alert("Nieuws geplaatst!");
+            loadNews();
+        }
+
+        async function loadNews() {
+            const feed = document.getElementById('news-feed');
+            const snap = await db.collection('news').get();
+            feed.innerHTML = '';
+            snap.forEach(doc => {
+                const d = doc.data();
+                feed.innerHTML += `
+                    <div style="margin-bottom:30px; border-bottom:1px solid #222; padding-bottom:10px;">
+                        <h3 style="color:var(--emerald); margin-bottom:5px;">${d.title}</h3>
+                        <small>${d.date}</small>
+                        <p>${d.content}</p>
+                    </div>`;
+            });
+        }
+
+        function selectRang(num) {
+            alert("Je hebt Rang " + num + " geselecteerd voor de show. Betaling volgt in Oz!");
+        }
+
+    </script>
+</body>
+</html>
