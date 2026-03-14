@@ -5,22 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wicked Official | Netherlands</title>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     
     <style>
-        :root { --emerald: #97d72e; --witch-black: #0a0a0a; --glass: rgba(0, 0, 0, 0.85); }
+        :root { --emerald: #97d72e; --glass: rgba(0, 0, 0, 0.85); }
         
         body { 
             margin: 0; 
-            background: url('https://i.ibb.co/v4mYmYm/image-41147e.jpg') no-repeat center center fixed; 
+            /* De afbeelding van de twee heksen als achtergrond */
+            background: url('https://static.nieuwsblad.be/Assets/Images_Upload/2024/05/15/8e14755a-4710-4828-b80c-7836881267f8.jpg') no-repeat center center fixed; 
             background-size: cover;
             color: white; 
             font-family: 'Montserrat', sans-serif; 
         }
 
-        /* Overlay to make text readable */
         .bg-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: -1; }
         
         nav { background: rgba(0,0,0,0.9); padding: 15px 50px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--emerald); position: sticky; top: 0; z-index: 1000; }
@@ -31,18 +30,15 @@
         .section-box { background: var(--glass); border: 1px solid var(--emerald); padding: 40px; border-radius: 15px; display: none; }
         .section-box.active { display: block; }
 
-        /* Calendar & Booking */
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 20px; }
-        .day { background: rgba(255,255,255,0.05); border: 1px solid #444; padding: 15px; text-align: center; min-height: 60px; border-radius: 8px; }
-        .day.has-show { border-color: var(--emerald); cursor: pointer; background: rgba(151, 215, 46, 0.1); }
-        .day.sold-out { border-color: #ff4444; cursor: not-allowed; opacity: 0.5; }
+        /* Status berichten */
+        .status-msg { padding: 15px; border-radius: 5px; margin-top: 10px; font-weight: bold; text-align: center; }
+        .wait { background: rgba(255, 165, 0, 0.2); border: 1px solid orange; color: orange; }
+        .accepted { background: rgba(151, 215, 46, 0.2); border: 1px solid var(--emerald); color: var(--emerald); }
+        .rejected { background: rgba(255, 0, 0, 0.2); border: 1px solid red; color: red; }
 
-        .rang-card { background: #111; padding: 20px; border: 1px solid #333; margin: 10px 0; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .ticket-controls { display: flex; align-items: center; gap: 15px; }
-        .qty-btn { background: var(--emerald); border: none; width: 30px; height: 30px; font-weight: bold; cursor: pointer; }
-
-        input, textarea, select { width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444; color: white; }
-        .btn { background: var(--emerald); color: black; padding: 15px; border: none; font-weight: bold; cursor: pointer; width: 100%; border-radius: 5px; }
+        .admin-item { background: rgba(255,255,255,0.05); padding: 15px; margin-bottom: 10px; border-radius: 8px; border-left: 4px solid gold; }
+        input, textarea, select { width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444; color: white; border-radius: 5px; }
+        .btn { background: var(--emerald); color: black; padding: 15px; border: none; font-weight: bold; cursor: pointer; width: 100%; border-radius: 5px; margin-top: 10px; }
         .login-btn { border: 1px solid var(--emerald); background: transparent; color: var(--emerald); padding: 8px 15px; cursor: pointer; }
     </style>
 </head>
@@ -55,67 +51,44 @@
             <a onclick="showSection('theshow')">The Show</a>
             <a onclick="showSection('audities')">Auditions</a>
             <a onclick="showSection('newsletter')">Newsletter</a>
-            <button class="login-btn" id="login-nav" onclick="toggleAuth()">LOG IN</button>
-            <a id="admin-nav" style="display:none; color:gold;" onclick="showSection('admin')">Admin</a>
+            <button class="login-btn" id="login-btn" onclick="openLogin()">LOG IN</button>
+            <a id="admin-nav" style="display:none; color:gold;" onclick="showSection('admin')">Admin Panel</a>
         </div>
     </nav>
 
     <div class="container">
-        <section id="theshow" class="section-box active">
-            <h2>Performance Schedule - March 2026</h2>
-            <div class="calendar-grid" id="calendar"></div>
-            
-            <div id="booking-step" style="display:none; margin-top:30px;">
-                <h3 id="show-details">Booking for March 14th</h3>
-                <div class="rang-card">
-                    <span>Rank 1 (Front) - FREE</span>
-                    <div class="ticket-controls">
-                        <button class="qty-btn" onclick="updateQty('r1', -1)">-</button>
-                        <span id="q-r1">0</span>
-                        <button class="qty-btn" onclick="updateQty('r1', 1)">+</button>
-                    </div>
-                </div>
-                <div class="rang-card">
-                    <span>Rank 2 (Middle) - FREE</span>
-                    <div class="ticket-controls">
-                        <button class="qty-btn" onclick="updateQty('r2', -1)">-</button>
-                        <span id="q-r2">0</span>
-                        <button class="qty-btn" onclick="updateQty('r2', 1)">+</button>
-                    </div>
-                </div>
-                <div class="rang-card">
-                    <span>Rank 3 (Back) - FREE</span>
-                    <div class="ticket-controls">
-                        <button class="qty-btn" onclick="updateQty('r3', -1)">-</button>
-                        <span id="q-r3">0</span>
-                        <button class="qty-btn" onclick="updateQty('r3', 1)">+</button>
-                    </div>
-                </div>
-                <button class="btn" onclick="submitBooking()">SUBMIT BOOKING</button>
-            </div>
+        <section id="login-section" class="section-box">
+            <h2>Login</h2>
+            <input type="text" id="username-input" placeholder="Enter username (virtual2025)">
+            <button class="btn" onclick="processLogin()">LOGIN</button>
         </section>
 
         <section id="audities" class="section-box">
             <h2>Audition for Wicked Netherlands</h2>
-            <input type="text" id="aud-name" placeholder="What's your name?">
-            <input type="number" id="aud-age" placeholder="How old are you?">
-            <input type="text" id="aud-discord" placeholder="What's your Discord name?">
-            <textarea id="aud-exp" placeholder="What's your experience?"></textarea>
-            <select id="aud-avail">
-                <option value="yes">I can attend every rehearsal</option>
-                <option value="no">I have some limitations</option>
-            </select>
-            <button class="btn" onclick="submitAudition()">SUBMIT AUDITION</button>
+            <div id="audition-content">
+                <input type="text" id="aud-name" placeholder="What's your name?">
+                <input type="number" id="aud-age" placeholder="How old are you?">
+                <input type="text" id="aud-discord" placeholder="What's your Discord name?">
+                <textarea id="aud-exp" placeholder="What's your experience?"></textarea>
+                <select id="aud-avail">
+                    <option value="yes">I can attend every rehearsal</option>
+                    <option value="no">I have some limitations</option>
+                </select>
+                <button class="btn" onclick="submitAudition()">SUBMIT AUDITION</button>
+            </div>
+            <div id="audition-status" style="display:none;"></div>
         </section>
 
-        <section id="newsletter" class="section-box">
-            <h2>Latest News</h2>
-            <div id="news-feed">Loading the latest magic...</div>
+        <section id="admin" class="section-box">
+            <h2 style="color:gold;">AUDITION MANAGEMENT</h2>
+            <div id="admin-auditions-list">Loading submissions...</div>
         </section>
+
+        <section id="theshow" class="section-box active"><h2>The Show</h2><p>Welcome to the Emerald City of the Netherlands!</p></section>
+        <section id="newsletter" class="section-box"><h2>Newsletter</h2><p>Latest updates coming soon.</p></section>
     </div>
 
     <script>
-        // Use your existing Firebase Config here
         const firebaseConfig = {
             apiKey: "AIzaSyCCm6vZCE1KH1SnclU7NHF2BmeOUW_suio",
             authDomain: "wickedrobloxofficial.firebaseapp.com",
@@ -126,71 +99,101 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const auth = firebase.auth();
 
-        let selectedShowId = null;
-        let tickets = { r1: 0, r2: 0, r3: 0 };
+        let currentUser = localStorage.getItem('wicked_user') || null;
 
         function showSection(id) {
             document.querySelectorAll('.section-box').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
 
-        async function loadCalendar() {
-            const cal = document.getElementById('calendar');
-            cal.innerHTML = '';
-            const snap = await db.collection('shows').get();
-            const shows = {};
-            snap.forEach(doc => shows[doc.data().day] = { id: doc.id, ...doc.data() });
-
-            for(let i=1; i<=31; i++) {
-                const s = shows[i];
-                const isSoldOut = s && (s.sold >= (s.capacity || 50));
-                const dayDiv = document.createElement('div');
-                dayDiv.className = `day ${s ? 'has-show' : ''} ${isSoldOut ? 'sold-out' : ''}`;
-                dayDiv.innerHTML = `<b>${i}</b><br>${s ? (isSoldOut ? 'SOLD OUT' : s.time) : ''}`;
-                
-                if(s && !isSoldOut) {
-                    dayDiv.onclick = () => {
-                        selectedShowId = s.id;
-                        document.getElementById('booking-step').style.display = 'block';
-                        document.getElementById('show-details').innerText = `Booking for March ${i}th (${s.time})`;
-                    };
-                }
-                cal.appendChild(dayDiv);
+        function openLogin() {
+            if(currentUser) {
+                localStorage.removeItem('wicked_user');
+                location.reload();
+            } else {
+                showSection('login-section');
             }
         }
 
-        function updateQty(rang, val) {
-            tickets[rang] = Math.max(0, tickets[rang] + val);
-            document.getElementById(`q-${rang}`).innerText = tickets[rang];
+        function processLogin() {
+            const user = document.getElementById('username-input').value;
+            if(user === "virtual2025") {
+                currentUser = "virtual2025";
+                localStorage.setItem('wicked_user', user);
+                checkUserAccess();
+                showSection('admin');
+            } else {
+                alert("Unknown user.");
+            }
         }
 
-        async function submitBooking() {
-            if(!auth.currentUser) return alert("Please log in to book tickets.");
-            const total = tickets.r1 + tickets.r2 + tickets.r3;
-            if(total === 0) return alert("Please select at least one ticket.");
+        function checkUserAccess() {
+            if(currentUser === "virtual2025") {
+                document.getElementById('admin-nav').style.display = 'block';
+                document.getElementById('login-btn').innerText = "LOG OUT";
+                loadAdminAuditions();
+            }
+        }
 
-            await db.collection('shows').doc(selectedShowId).update({
-                sold: firebase.firestore.FieldValue.increment(total)
-            });
+        async function submitAudition() {
+            const data = {
+                name: document.getElementById('aud-name').value,
+                age: document.getElementById('aud-age').value,
+                discord: document.getElementById('aud-discord').value,
+                experience: document.getElementById('aud-exp').value,
+                availability: document.getElementById('aud-avail').value,
+                status: 'pending',
+                reason: '',
+                timestamp: Date.now()
+            };
             
-            await db.collection('bookings').add({
-                userId: auth.currentUser.uid,
-                showId: selectedShowId,
-                tickets: tickets,
-                status: 'Confirmed'
-            });
-
-            alert("Tickets booked! See you in Oz (Netherlands)!");
-            location.reload();
+            await db.collection('auditions').add(data);
+            localStorage.setItem('has_auditioned', 'true');
+            showStatus('wait', 'Please wait for results');
         }
 
-        // Initialize
-        auth.onAuthStateChanged(user => {
-            if(user) document.getElementById('login-nav').innerText = "LOG OUT";
-            loadCalendar();
-        });
+        function showStatus(type, text) {
+            const statusDiv = document.getElementById('audition-status');
+            const contentDiv = document.getElementById('audition-content');
+            contentDiv.style.display = 'none';
+            statusDiv.style.display = 'block';
+            statusDiv.className = `status-msg ${type}`;
+            statusDiv.innerText = text;
+        }
+
+        async function loadAdminAuditions() {
+            const list = document.getElementById('admin-auditions-list');
+            const snap = await db.collection('auditions').get();
+            list.innerHTML = '';
+            snap.forEach(doc => {
+                const d = doc.data();
+                const item = document.createElement('div');
+                item.className = 'admin-item';
+                item.innerHTML = `
+                    <b>${d.name}</b> (${d.discord})<br>
+                    <small>${d.experience}</small><br>
+                    <button class="btn" style="width:auto; font-size:10px; background:green;" onclick="updateStatus('${doc.id}', 'accepted')">Accept</button>
+                    <button class="btn" style="width:auto; font-size:10px; background:red;" onclick="updateStatus('${doc.id}', 'rejected')">Reject</button>
+                    <input type="text" id="reason-${doc.id}" placeholder="Reason for rejection" style="width:200px; display:inline-block; font-size:10px;">
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        async function updateStatus(id, newStatus) {
+            const reason = document.getElementById(`reason-${id}`).value;
+            await db.collection('auditions').doc(id).update({
+                status: newStatus,
+                reason: reason
+            });
+            alert("Status updated!");
+            loadAdminAuditions();
+        }
+
+        // Check login bij opstarten
+        checkUserAccess();
+        if(localStorage.getItem('has_auditioned')) showStatus('wait', 'Please wait for results');
     </script>
 </body>
 </html>
