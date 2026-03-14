@@ -248,8 +248,8 @@
             showSection('theshow');
         }
 
-        async function loadAdminData() {
-            // Bookings
+   async function loadAdminData() {
+            // --- TICKETS ---
             const ticketList = document.getElementById('list-tickets');
             ticketList.innerHTML = "<h4>Live Bookings</h4>";
             const bks = await db.collection('bookings').orderBy('ts', 'desc').get();
@@ -258,7 +258,18 @@
                 ${doc.data().name} - ${doc.data().show} [${doc.data().tier}] (${doc.data().qty}x)</div>`;
             });
 
-            // Auditions
+            // --- SHOWS (NIEUW: Verwijderknop toegevoegd) ---
+            // We voegen de lijst met shows toe aan het ticket-tabblad zodat je ze kunt beheren
+            ticketList.innerHTML += "<h4 style='margin-top:20px;'>Manage Scheduled Shows</h4>";
+            const shs = await db.collection('shows').orderBy('day').get();
+            shs.forEach(doc => {
+                ticketList.innerHTML += `<div class="admin-item" style="border-color: var(--emerald);">
+                    <button class="del-btn" onclick="deleteDoc('shows','${doc.id}')">X</button>
+                    Day: ${doc.data().day} - Time: ${doc.data().time}
+                </div>`;
+            });
+
+            // --- AUDITIONS ---
             const audList = document.getElementById('list-auditions');
             audList.innerHTML = "<h4>Applications</h4>";
             const auds = await db.collection('auditions').get();
@@ -268,7 +279,7 @@
                 <b>${d.name} (${d.age})</b><br>Role: ${d.role}<br>Exp: ${d.exp}<br>Avail: ${d.avail}</div>`;
             });
 
-            // News
+            // --- NEWS ---
             const newsList = document.getElementById('list-news');
             newsList.innerHTML = "<h4>News Archive</h4>";
             const news = await db.collection('newsletter').get();
@@ -276,7 +287,7 @@
                 newsList.innerHTML += `<div class="admin-item"><button class="del-btn" onclick="deleteDoc('newsletter','${doc.id}')">X</button>${doc.data().title}</div>`;
             });
 
-            // Cast
+            // --- CAST ---
             const castList = document.getElementById('list-cast');
             castList.innerHTML = "<h4>Oz Cast</h4>";
             const cast = await db.collection('cast').get();
