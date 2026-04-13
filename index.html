@@ -14,92 +14,100 @@
             --gold: #d4af37; 
             --gold-bright: #f9e29b;
             --dark-bg: #030303; 
-            --card-bg: rgba(20, 20, 20, 0.9);
+            --card-bg: rgba(15, 15, 15, 0.9);
             --border: rgba(212, 175, 55, 0.3);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); }
+        * { margin: 0; padding: 0; box-sizing: border-box; transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); }
         
         body { 
             background: var(--dark-bg); 
             color: white; 
             font-family: 'Montserrat', sans-serif; 
             overflow-x: hidden;
-            background-image: radial-gradient(circle at top right, #200000 0%, #030303 60%);
+            background-image: radial-gradient(circle at top right, #250000 0%, #030303 70%);
         }
 
         /* --- Luxe Navigatie met Aanpasbaar Logo --- */
         nav { 
-            background: rgba(0,0,0,0.95); 
+            background: rgba(0,0,0,0.96); 
             backdrop-filter: blur(10px);
-            padding: 15px 60px; 
+            padding: 20px 70px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
             border-bottom: 2px solid var(--gold);
             position: sticky; top: 0; z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
-        .logo-container { display: flex; align-items: center; gap: 15px; }
+        .logo-container { display: flex; align-items: center; gap: 20px; }
         .logo-img { 
-            height: 50px; /* Hoogte van het logo */
+            height: 60px; /* Hoogte van het logo */
             width: auto;
-            filter: drop-shadow(0 0 10px rgba(197, 160, 89, 0.5));
+            filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.6));
         }
-        .brand-text { font-family: 'Cinzel Decorative'; font-size: 22px; color: var(--gold); letter-spacing: 2px; text-shadow: 0 0 10px rgba(197, 160, 89, 0.3); }
+        .brand-text { font-family: 'Cinzel Decorative'; font-size: 26px; color: var(--gold); letter-spacing: 3px; text-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }
 
-        .nav-links a { color: white; text-decoration: none; margin-left: 30px; font-weight: 700; font-size: 12px; text-transform: uppercase; cursor: pointer; letter-spacing: 1px; }
-        .nav-links a:hover { color: var(--gold); text-shadow: 0 0 10px var(--gold); }
+        .nav-links { display: flex; align-items: center; }
+        .nav-links a { color: white; text-decoration: none; margin-left: 35px; font-weight: 700; font-size: 13px; text-transform: uppercase; cursor: pointer; letter-spacing: 2px; }
+        .nav-links a:hover { color: var(--gold); text-shadow: 0 0 15px var(--gold); transform: translateY(-2px); }
 
-        .container { max-width: 1200px; margin: 50px auto; padding: 20px; }
+        .container { max-width: 1200px; margin: 60px auto; padding: 20px; }
 
         /* --- Cinematic Sections & Animations --- */
-        .reveal { animation: revealEffect 1s ease-out forwards; opacity: 0; }
-        @keyframes revealEffect { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .reveal { animation: revealEffect 1.2s ease-out forwards; opacity: 0; }
+        @keyframes revealEffect { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 
-        .hero-section { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
-        .info-card { background: var(--card-bg); padding: 50px; border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 0 40px rgba(0,0,0,0.8); position: relative; overflow: hidden; }
-        .info-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: linear-gradient(90deg, var(--rouge), var(--gold), var(--rouge)); }
+        .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+        .info-card { 
+            background: var(--card-bg); padding: 60px; 
+            border: 1px solid var(--border); border-radius: 12px; 
+            box-shadow: 0 15px 50px rgba(0,0,0,0.9); 
+            position: relative; overflow: hidden; 
+        }
+        .info-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: linear-gradient(90deg, var(--rouge), var(--gold), var(--rouge)); }
         
-        h1 { font-family: 'Playfair Display'; font-size: 50px; font-style: italic; color: var(--gold-bright); margin-bottom: 20px; line-height: 1.1; }
-        .badge { background: var(--rouge); padding: 5px 15px; font-weight: 700; letter-spacing: 2px; font-size: 11px; margin-bottom: 20px; display: inline-block; color: white; }
+        h1 { font-family: 'Playfair Display'; font-size: 55px; font-style: italic; color: var(--gold-bright); margin-bottom: 25px; line-height: 1.1; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .badge { background: var(--rouge); padding: 6px 18px; font-weight: 700; letter-spacing: 3px; font-size: 11px; margin-bottom: 25px; display: inline-block; color: white; border-radius: 2px; }
 
-        .video-placeholder { 
-            width: 100%; height: 400px; background: #111; border-radius: 10px; 
+        .image-frame { 
+            width: 100%; height: 450px; background: #111; border-radius: 12px; 
             display: flex; align-items: center; justify-content: center;
-            border: 1px solid #333; position: relative; cursor: pointer; overflow: hidden;
+            border: 2px solid #333; position: relative; cursor: pointer; overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
         }
-        .video-placeholder:hover { border-color: var(--gold); transform: scale(1.02) rotate(1deg); }
-        .play-btn { width: 90px; height: 90px; background: rgba(158, 0, 0, 0.8); border: 3px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 30px var(--rouge); }
+        .image-frame:hover { border-color: var(--gold); transform: scale(1.03) rotate(1deg); }
+        .play-btn { width: 100px; height: 100px; background: rgba(158, 0, 0, 0.9); border: 4px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 40px var(--rouge); }
 
-        /* --- Ticket System: Golden Tickets --- */
-        .ticket-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 60px; }
+        /* --- Ticket System: Golden Invitations --- */
+        .ticket-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 35px; margin-top: 80px; }
         .ticket-card { 
-            background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%); color: black; padding: 40px; border-radius: 8px; position: relative;
+            background: linear-gradient(145deg, #fff 0%, #e6e6e6 100%); color: black; padding: 50px; border-radius: 10px; position: relative;
             cursor: pointer; border: 2px solid transparent; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .ticket-card:hover { transform: translateY(-15px) rotate(-1deg); box-shadow: 0 20px 40px rgba(191, 0, 10, 0.4); border-color: var(--gold); }
-        .ticket-card.active { border-color: var(--rouge); background: #fff9f9; box-shadow: 0 0 30px rgba(158, 0, 0, 0.3); }
+        .ticket-card:hover { transform: translateY(-15px) scale(1.02); box-shadow: 0 25px 50px rgba(191, 0, 10, 0.5); border-color: var(--gold); }
+        .ticket-card.active { border-color: var(--rouge); background: #fff9f9; box-shadow: 0 0 40px rgba(158, 0, 0, 0.4); }
         
-        .ticket-card h3 { font-family: 'Cinzel Decorative'; font-size: 24px; color: var(--rouge); margin-bottom: 15px; }
-        .price-tag { font-size: 35px; font-weight: 700; color: #000; margin-bottom: 10px; }
-        .limit-tag { font-size: 11px; text-transform: uppercase; color: #666; font-weight: 700; }
+        .ticket-card h3 { font-family: 'Cinzel Decorative'; font-size: 26px; color: var(--rouge); margin-bottom: 20px; letter-spacing: 1px; }
+        .price-tag { font-size: 40px; font-weight: 700; color: #000; margin-bottom: 15px; font-family: 'Montserrat', sans-serif; }
+        .limit-tag { font-size: 12px; text-transform: uppercase; color: #555; font-weight: 700; letter-spacing: 1px; }
 
         /* --- Management Suite --- */
-        .admin-panel { background: #0a0a0a; border: 2px solid var(--gold); padding: 50px; border-radius: 10px; box-shadow: 0 0 50px rgba(0,0,0,0.9); }
-        .admin-item { background: #111; padding: 20px; border-radius: 8px; border: 1px solid #333; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .del-btn { background: var(--rouge); color: white; border: none; padding: 8px 18px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-
+        .admin-panel { background: #080808; border: 2px solid var(--gold); padding: 60px; border-radius: 12px; box-shadow: 0 0 60px rgba(0,0,0,0.95); }
+        .admin-item { background: #111; padding: 25px; border-radius: 8px; border: 1px solid #333; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        
         .btn-gold { 
-            background: linear-gradient(135deg, var(--gold) 0%, #c5a059 100%); color: black; padding: 18px 45px; border: none; 
-            font-weight: 700; text-transform: uppercase; cursor: pointer; letter-spacing: 2px; border-radius: 5px;
-            font-size: 13px;
+            background: linear-gradient(135deg, var(--gold) 0%, #c5a059 100%); color: black; padding: 20px 50px; border: none; 
+            font-weight: 700; text-transform: uppercase; cursor: pointer; letter-spacing: 2px; border-radius: 6px;
+            font-size: 14px; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
-        .btn-gold:hover { background: white; box-shadow: 0 0 20px white; transform: translateY(-3px); }
+        .btn-gold:hover { background: white; box-shadow: 0 0 25px white; transform: translateY(-3px); }
 
         .section { display: none; }
         .section.active { display: block; }
 
-        input, textarea, select { width: 100%; padding: 15px; margin: 10px 0; background: #111; border: 1px solid #333; color: white; border-radius: 8px; }
+        input, textarea, select { width: 100%; padding: 18px; margin: 12px 0; background: #111; border: 1px solid #333; color: white; border-radius: 8px; font-family: 'Montserrat', sans-serif; }
     </style>
 </head>
 <body>
@@ -113,97 +121,97 @@
             <a onclick="showPage('home')">Home</a>
             <a onclick="showPage('tickets')">Tickets & Deals</a>
             <a onclick="showPage('casting')">Casting Call</a>
-            <a id="admin-link" style="display:none; color: var(--gold);" onclick="showPage('admin')">Manager</a>
-            <a onclick="adminLogin()" style="color: var(--rouge); cursor: pointer;">Staff Login</a>
+            <a id="admin-link" style="display:none; color: var(--gold); border: 1px solid var(--gold); padding: 5px 15px;" onclick="showPage('admin')">Manager</a>
+            <a onclick="adminLogin()" style="color: var(--rouge); cursor: pointer; margin-left: 20px;">Staff</a>
         </div>
     </nav>
 
     <div class="container">
         
         <div id="home" class="section active reveal">
-            <div class="hero-section">
+            <div class="hero-grid">
                 <div class="info-card">
                     <span class="badge">A VIRTUAL ENTERTAINMENT PRODUCTION</span>
                     <h1>Lentedeal: Gratis Upgrade naar Diamond</h1>
-                    <p style="font-size: 18px; line-height: 1.8; margin-bottom: 30px; font-weight: 300; color: #eee;">
-                        Ervaar de revolutionaire film van Baz Luhrmann, nu tot leven gebracht op het podium. Dompel je onder in een wereld van pracht, passie en Boheemse glorie. Nu met een exclusieve Rangupgrade.
+                    <p style="font-size: 19px; line-height: 1.9; margin-bottom: 35px; font-weight: 300; color: #f0f0f0;">
+                        Ervaar de revolutionaire film van Baz Luhrmann, nu tot leven gebracht op het podium. Dompel je onder in een wereld van pracht, passie en Boheemse glorie. Nu tijdelijk met een exclusieve Rangupgrade.
                     </p>
                     <button class="btn-gold" onclick="showPage('tickets')">Ontdek Tickets</button>
                 </div>
-                <div class="video-placeholder">
-                    <img src="https://i.ibb.co/F44P6Gq/show.jpg" style="width:100%; height:100%; object-fit:cover; opacity: 0.8;">
-                    <div class="play-btn"><div style="width:0; height:0; border-top:15px solid transparent; border-bottom:15px solid transparent; border-left:25px solid white; margin-left:8px;"></div></div>
+                <div class="image-frame">
+                    <img src="https://i.ibb.co/F44P6Gq/show.jpg" style="width:100%; height:100%; object-fit:cover; opacity: 0.85;">
+                    <div class="play-btn"><div style="width:0; height:0; border-top:18px solid transparent; border-bottom:18px solid transparent; border-left:28px solid white; margin-left:10px;"></div></div>
                 </div>
             </div>
         </div>
 
         <div id="tickets" class="section">
-            <h1 style="text-align: center; margin-bottom: 50px; font-family: 'Cinzel Decorative'; color: var(--gold);">Selecteer Uw Spektakel</h1>
+            <h1 style="text-align: center; margin-bottom: 60px; font-family: 'Cinzel Decorative'; color: var(--gold); letter-spacing: 3px;">Selecteer Uw Spektakel</h1>
             
             <div class="ticket-grid reveal">
                 <div class="ticket-card" id="card-cancan" onclick="selectRank('Can Can Seats (Premium)', 'cancan')">
                     <h3>Can Can Seats</h3>
-                    <p style="margin-bottom: 15px;">Zit midden in de actie, direct aan het podium.</p>
+                    <p style="margin-bottom: 20px; color: #444;">Zit midden in de actie, direct aan het podium.</p>
                     <div class="price-tag">R$ <span id="p-cancan">0</span></div>
                     <span class="limit-tag">Beschikbaar: <span id="l-cancan">0</span> stoelen</span>
                 </div>
 
                 <div class="ticket-card" id="card-diamond" onclick="selectRank('Diamond (Rang 2)', 'diamond')">
                     <h3>Diamond</h3>
-                    <p style="margin-bottom: 15px;">Het meest spectaculaire zicht op het ensemble.</p>
+                    <p style="margin-bottom: 20px; color: #444;">Het meest spectaculaire zicht op het ensemble.</p>
                     <div class="price-tag">R$ <span id="p-diamond">0</span></div>
                     <span class="limit-tag">Beschikbaar: <span id="l-diamond">0</span> stoelen</span>
                 </div>
 
                 <div class="ticket-card" id="card-bohemian" onclick="selectRank('Bohemian (Rang 3)', 'bohemian')">
                     <h3>Bohemian</h3>
-                    <p style="margin-bottom: 15px;">Geniet van het verhaal en de muziek.</p>
+                    <p style="margin-bottom: 20px; color: #444;">Geniet van het verhaal en de muziek.</p>
                     <div class="price-tag">R$ <span id="p-bohemian">0</span></div>
                     <span class="limit-tag">Beschikbaar: <span id="l-bohemian">0</span> stoelen</span>
                 </div>
             </div>
 
-            <div id="booking-form" style="display:none; margin-top: 60px; background: var(--card-bg); padding: 40px; border: 1px solid var(--gold); border-radius: 10px;" class="reveal">
-                <h2 id="sel-title" style="color:var(--gold); font-family: 'Playfair Display'; margin-bottom: 20px;"></h2>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <input type="text" id="book-user" placeholder="Roblox Username" style="background: white; color: black;">
-                    <input type="number" id="book-qty" value="1" min="1" max="10" style="background: white; color: black;">
+            <div id="booking-form" style="display:none; margin-top: 70px; background: var(--card-bg); padding: 50px; border: 1px solid var(--gold); border-radius: 12px;" class="reveal">
+                <h2 id="sel-title" style="color:var(--gold); font-family: 'Playfair Display'; margin-bottom: 25px; font-size: 30px;"></h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
+                    <input type="text" id="book-user" placeholder="Roblox Username" style="background: white; color: black; font-weight: 700;">
+                    <input type="number" id="book-qty" value="1" min="1" max="10" style="background: white; color: black; font-weight: 700;">
                 </div>
-                <button class="btn-gold" style="width: 100%; margin-top: 25px; background: var(--rouge); color: white;" onclick="confirmBooking()">Bevestig Reservering</button>
+                <button class="btn-gold" style="width: 100%; margin-top: 30px; background: var(--rouge); color: white;" onclick="confirmBooking()">Bevestig Reservering</button>
             </div>
         </div>
 
         <div id="casting" class="section">
-            <div class="info-card reveal" style="max-width: 700px; margin: auto;">
-                <h2 style="color: var(--gold); font-family: 'Cinzel Decorative'; margin-bottom: 20px;">Casting Call</h2>
+            <div class="info-card reveal" style="max-width: 800px; margin: auto;">
+                <h2 style="color: var(--gold); font-family: 'Cinzel Decorative'; margin-bottom: 30px; text-align: center; letter-spacing: 2px;">Casting Call</h2>
                 <input type="text" id="aud-discord" placeholder="Discord Naam">
                 <input type="text" id="aud-role" placeholder="Welke Rol?">
-                <textarea id="aud-exp" placeholder="Jouw ervaring..." style="height: 150px;"></textarea>
+                <textarea id="aud-exp" placeholder="Jouw ervaring..." style="height: 180px;"></textarea>
                 <button class="btn-gold" style="width: 100%;" onclick="submitAudition()">Verstuur Auditie</button>
             </div>
         </div>
 
         <div id="admin" class="section">
             <div class="admin-panel reveal">
-                <h2 style="color: var(--gold); font-family: 'Cinzel Decorative'; margin-bottom: 30px;">Management Suite</h2>
-                <div class="admin-item" style="background: transparent; border: none; justify-content: flex-start; gap: 20px;">
+                <h2 style="color: var(--gold); font-family: 'Cinzel Decorative'; margin-bottom: 40px; text-align: center;">Management Suite</h2>
+                <div class="admin-item" style="background: transparent; border: none; justify-content: flex-start; gap: 25px;">
                      <button class="btn-gold" onclick="logout()">Loguit</button>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 40px;">
                     <div>
-                        <h3>Prijsbeheer (Robux)</h3>
+                        <h3 style="color: var(--gold); margin-bottom: 15px;">Prijsbeheer (Robux)</h3>
                         <input type="number" id="set-p-cancan" placeholder="Prijs Can Can">
                         <input type="number" id="set-p-diamond" placeholder="Prijs Diamond">
                         <input type="number" id="set-p-bohemian" placeholder="Prijs Bohemian">
                     </div>
                     <div>
-                        <h3>Capaciteit (Max Stoelen)</h3>
+                        <h3 style="color: var(--gold); margin-bottom: 15px;">Capaciteit (Max Stoelen)</h3>
                         <input type="number" id="set-l-cancan" placeholder="Max Can Can">
                         <input type="number" id="set-l-diamond" placeholder="Max Diamond">
                         <input type="number" id="set-l-bohemian" placeholder="Max Bohemian">
                     </div>
                 </div>
-                <button class="btn-gold" style="width: 100%; margin-top: 30px;" onclick="saveSettings()">Update Systeem</button>
+                <button class="btn-gold" style="width: 100%; margin-top: 40px;" onclick="saveSettings()">Update Systeem</button>
             </div>
         </div>
 
