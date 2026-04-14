@@ -4,278 +4,265 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Moulin Rouge! | The Spectacular Musical</title>
+    
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Playfair+Display:ital,wght@0,700;1,700&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
     
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Playfair+Display:ital,wght@0,700;1,700&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+
     <style>
-        :root { 
-            --rouge: #8b0000; 
-            --gold: #d4af37; 
-            --dark-red: #2a0000;
-            --card-bg: rgba(40, 0, 0, 0.95);
+        :root {
+            --rouge-red: #e60000;
+            --gold: #d4af37;
+            --dark-bg: #0a0a0a;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body { 
-            background: var(--dark-red);
-            color: white; 
-            font-family: 'Montserrat', sans-serif; 
-            overflow-x: hidden;
+        body {
+            background-color: var(--dark-bg);
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
             transition: opacity 0.8s ease-in-out;
         }
 
-        /* Nav & Headers */
-        nav { 
-            background: rgba(0,0,0,0.95); 
-            padding: 15px 50px; 
-            display: flex; justify-content: space-between; align-items: center; 
-            border-bottom: 2px solid var(--gold);
-            position: sticky; top: 0; z-index: 1000;
-        }
-        .logo-img { height: 60px; filter: drop-shadow(0 0 10px var(--gold)); cursor: pointer; }
-
-        .rouge-header { 
-            font-family: 'Cinzel Decorative', cursive; 
-            font-size: clamp(30px, 8vw, 60px); 
-            color: var(--gold); 
-            text-align: center; 
-            margin: 40px 0 20px;
-            text-shadow: 0 0 20px var(--rouge);
+        /* Navigatie & Taal (Foto 3) */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background: rgba(0,0,0,0.9);
+            border-bottom: 1px solid var(--gold);
         }
 
-        /* Calendar */
-        .calendar-title { font-family: 'Cinzel Decorative'; color: var(--gold); text-align: center; font-size: 32px; margin: 30px 0; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; max-width: 1000px; margin: auto; }
-        .cal-day { min-height: 100px; background: rgba(0,0,0,0.4); border: 1px solid #4a0000; padding: 10px; position: relative; }
-        .cal-num { font-size: 14px; opacity: 0.5; }
-        .show-info { background: var(--rouge); font-size: 10px; padding: 4px; margin-top: 5px; border-radius: 2px; }
+        .lang-selector {
+            position: relative;
+            cursor: pointer;
+            color: var(--gold);
+            font-weight: bold;
+            text-transform: uppercase;
+        }
 
-        /* Photo Book */
-        .book-row { display: flex; align-items: center; gap: 40px; margin-bottom: 60px; }
-        .book-row:nth-child(even) { flex-direction: row-reverse; }
-        .book-img { width: 50%; border: 4px solid var(--gold); box-shadow: 0 15px 30px black; }
-        .book-text { width: 50%; font-size: 18px; line-height: 1.6; }
+        .lang-dropdown {
+            position: absolute;
+            top: 30px;
+            right: 0;
+            background: black;
+            border: 1px solid var(--gold);
+            display: none;
+            z-index: 100;
+        }
 
-        /* Dashboard UI */
-        .admin-section { background: #111; padding: 30px; border: 2px solid var(--gold); border-radius: 10px; margin-top: 30px; }
-        .data-list-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #333; align-items: center; }
-        .del-btn { background: var(--rouge); color: white; border: none; padding: 5px 15px; cursor: pointer; border-radius: 3px; }
+        .lang-dropdown div {
+            padding: 10px 20px;
+            white-space: nowrap;
+        }
 
-        /* Language Picker */
-        .lang-picker { position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.9); padding: 15px; border: 1px solid var(--gold); border-radius: 5px; z-index: 2000; }
-        .lang-picker select { background: transparent; color: var(--gold); border: none; font-weight: bold; font-size: 16px; cursor: pointer; outline: none; }
+        .lang-dropdown div:hover { background: var(--rouge-red); color: white; }
 
-        .section { display: none; padding: 40px 20px; }
-        .section.active { display: block; }
-        .btn-gold { background: var(--gold); color: black; border: none; padding: 15px 30px; font-weight: bold; cursor: pointer; text-transform: uppercase; border-radius: 3px; }
-        input, select, textarea { width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444; color: white; }
+        /* Hero (Foto 1) */
+        .hero {
+            text-align: center;
+            padding: 100px 20px;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://www.moulinrougemusical.com/wp-content/uploads/2023/04/MR_Header_Background.jpg');
+            background-size: cover;
+        }
+
+        .glow-title {
+            font-family: 'Cinzel Decorative', cursive;
+            font-size: 4rem;
+            color: #ffcc33;
+            text-shadow: 0 0 15px #ff3300, 0 0 30px #ff3300;
+            margin-bottom: 20px;
+        }
+
+        /* Agenda (Foto 4) */
+        .calendar-container {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        .calendar-header {
+            font-family: 'Cinzel Decorative';
+            text-align: center;
+            color: var(--gold);
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            background: #222;
+            border: 1px solid #444;
+        }
+
+        .day {
+            height: 120px;
+            background: var(--dark-bg);
+            border: 1px solid #222;
+            padding: 5px;
+            position: relative;
+        }
+
+        .day-num { font-size: 0.8rem; color: #666; }
+
+        .show-tag {
+            background: var(--rouge-red);
+            font-size: 0.65rem;
+            padding: 4px;
+            margin-top: 5px;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        /* Dashboard & Form */
+        .admin-panel {
+            background: #111;
+            border-top: 2px solid var(--gold);
+            padding: 40px;
+            margin-top: 100px;
+        }
+
+        input, select {
+            background: #222;
+            border: 1px solid var(--gold);
+            color: white;
+            padding: 10px;
+            margin: 5px;
+        }
+
+        .btn-rouge {
+            background: var(--rouge-red);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            cursor: pointer;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 
-    <nav>
-        <img src="https://i.ibb.co/L6H7Qvj/moulin-rouge-windmill.png" class="logo-img" onclick="showPage('home')">
-        <div class="nav-links">
-            <a onclick="showPage('home')" data-key="nav-home">Home</a>
-            <a onclick="showPage('schedule')" data-key="nav-schedule">Schedule</a>
-            <a onclick="showPage('photobook')" data-key="nav-story">Photo Book</a>
-            <a id="admin-link" style="display:none; color: var(--gold);" onclick="showPage('admin')">Management</a>
-            <a onclick="adminLogin()" style="color: var(--rouge);">Staff Login</a>
-        </div>
-    </nav>
-
-    <div class="container">
-        <div id="home" class="section active">
-            <h1 class="rouge-header">GET READY TO ROUGE!</h1>
-            <div style="max-width: 900px; margin: auto; text-align: center; line-height: 1.8; font-size: 19px;">
-                <p id="main-desc">
-                    Bereid je voor op een wereld vol schoonheid en romantiek, van opwinding, drama en overdaad! Een extravagante wereld waar alle bohemians zich laten verleiden. 
-                    Welkom bij Moulin Rouge! De Musical. De revolutionaire film van Baz Luhrmann komt tot leven in een unieke mash-up musical, met meer dan 70 bekende nummers. 
-                    Winnaar van maar liefst 10 Tony Awards® en een eerbetoon aan waarheid, schoonheid, vrijheid en natuurlijk liefde. 
-                    Moulin Rouge! De Musical is dan ook veel meer dan een musical; het is een state of mind! 
-                    Beleef de meest uitbundige nacht van je leven in het Beatrix Theater Utrecht.
-                </p>
-                <div style="margin-top: 30px; border: 1px solid var(--gold); padding: 20px;">
-                    <h3 data-key="tickets-title">TICKETS & OFFERS</h3>
-                    <p data-key="tickets-sub">Book your experience below</p>
-                    <div id="deal-container" style="display: flex; gap: 20px; justify-content: center; margin-top: 20px;"></div>
-                </div>
-            </div>
-        </div>
-
-        <div id="schedule" class="section">
-            <h1 class="calendar-title" id="cal-month-name">MONTH 2026</h1>
-            <div class="calendar-grid" id="calendar-body"></div>
-        </div>
-
-        <div id="photobook" class="section">
-            <div id="book-content" style="max-width: 1000px; margin: auto;"></div>
-        </div>
-
-        <div id="admin" class="section">
-            <div class="admin-section">
-                <h2>Show & Ticket Management</h2>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <div>
-                        <h3>Add Show/Deal</h3>
-                        <input type="date" id="adm-date">
-                        <input type="text" id="adm-title" placeholder="Show/Deal Title">
-                        <input type="text" id="adm-price" placeholder="Price (e.g. €79.99)">
-                        <button class="btn-gold" onclick="saveData('shows')">Save Event</button>
-                    </div>
-                    <div id="adm-show-list"></div>
-                </div>
-            </div>
-
-            <div class="admin-section">
-                <h2>Photo Book Editor</h2>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <div>
-                        <input type="text" id="adm-img-url" placeholder="Image URL">
-                        <textarea id="adm-img-desc" placeholder="Image Description"></textarea>
-                        <button class="btn-gold" onclick="saveData('book')">Add to Book</button>
-                    </div>
-                    <div id="adm-book-list"></div>
-                </div>
-            </div>
+<nav>
+    <div style="font-family: 'Cinzel Decorative'; font-size: 1.5rem; color: var(--gold);">MOULIN ROUGE!</div>
+    <div class="lang-selector" onclick="document.querySelector('.lang-dropdown').style.display = 'block'">
+        🌐 <span id="active-lang">NETHERLANDS</span> ⌵
+        <div class="lang-dropdown">
+            <div onclick="changeLang('ENGLISH', 'en')">ENGLISH</div>
+            <div onclick="changeLang('NEDERLANDS', 'nl')">NEDERLANDS</div>
+            <div onclick="changeLang('DEUTSCH', 'de')">DEUTSCH</div>
         </div>
     </div>
+</nav>
 
-    <div class="lang-picker">
-        <select onchange="applyLanguage(this.value)">
-            <option value="nl">Nederlands</option>
-            <option value="en">English</option>
-            <option value="de">Deutsch</option>
-        </select>
+<section class="hero">
+    <h1 class="glow-title">GET READY TO ROUGE!</h1>
+    <p id="hero-sub" style="max-width: 700px; margin: 0 auto; line-height: 1.6;">
+        Bereid je voor op een wereld vol schoonheid en romantiek, van opwinding, drama en overdaad!
+    </p>
+</section>
+
+<section class="calendar-container">
+    <div class="calendar-header" id="cal-month">APRIL 2026</div>
+    <div class="calendar-grid" id="calendar-grid">
+        </div>
+</section>
+
+<section class="admin-panel">
+    <h2 style="color: var(--gold)">DASHBOARD (Cast & Shows)</h2>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+        <div>
+            <h3>Show toevoegen/verwijderen</h3>
+            <input type="number" id="show-day" placeholder="Dag (bijv. 14)">
+            <input type="text" id="show-time" placeholder="Tijd (bijv. 19:30)">
+            <button class="btn-rouge" onclick="addShow()">Toevoegen</button>
+            <p>Can-Can Prijs: <input type="number" id="cancan-price" value="10"> Robux</p>
+        </div>
+
+        <div>
+            <h3>Casting Applicatie</h3>
+            <input type="text" id="disc-name" placeholder="Discord Name">
+            <input type="text" id="rob-name" placeholder="Roblox Name">
+            <select id="cast-role">
+                <option>Christian</option>
+                <option>Satine</option>
+                <option>The Duke</option>
+            </select>
+            <p>Present at rehearsals? 
+                <input type="radio" name="reh" value="Yes"> Ja 
+                <input type="radio" name="reh" value="No"> Nee
+            </p>
+            <button class="btn-rouge">Solliciteer</button>
+        </div>
     </div>
+</section>
 
-    <script>
-        // Use your existing Firebase config from prior prompts
-        const firebaseConfig = {
-            apiKey: "AIzaSyCCm6vZCE1KH1SnclU7NHF2BmeOUW_suio",
-            authDomain: "wickedrobloxofficial.firebaseapp.com",
-            projectId: "wickedrobloxofficial",
-            storageBucket: "wickedrobloxofficial.firebasestorage.app",
-            messagingSenderId: "107452125942",
-            appId: "1:107452125942:web:ca9c1222469fa41b1992d7"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        const langData = {
-            nl: { 
-                "nav-home": "Home", "nav-schedule": "Schema", "nav-story": "Fotoboek",
-                "tickets-title": "TICKETS & AANBIEDINGEN", "tickets-sub": "Boek uw ervaring hieronder",
-                "main-desc": "Bereid je voor op een wereld vol schoonheid en romantiek... Welkom bij Moulin Rouge! De Musical."
-            },
-            en: { 
-                "nav-home": "Home", "nav-schedule": "Schedule", "nav-story": "Photo Book",
-                "tickets-title": "TICKETS & OFFERS", "tickets-sub": "Book your experience below",
-                "main-desc": "Prepare for a world of beauty and romance... Welcome to Moulin Rouge! The Musical."
-            },
-            de: { 
-                "nav-home": "Startseite", "nav-schedule": "Spielplan", "nav-story": "Fotobuch",
-                "tickets-title": "TICKETS & ANGEBOTE", "tickets-sub": "Buchen Sie hier Ihr Erlebnis",
-                "main-desc": "Bereiten Sie sich auf eine Welt voller Schönheit und Romantik vor... Willkommen bei Moulin Rouge! Das Musical."
-            }
-        };
-
-        function applyLanguage(lang) {
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#8b0000', '#C0C0C0'] });
-            document.body.style.opacity = '0';
-            setTimeout(() => {
-                const dict = langData[lang];
-                document.querySelectorAll('[data-key]').forEach(el => el.innerText = dict[el.dataset.key]);
-                document.getElementById('main-desc').innerText = dict["main-desc"];
-                document.body.style.opacity = '1';
-            }, 800);
+<script>
+    // 1. Agenda Genereren voor April 2026
+    const grid = document.getElementById('calendar-grid');
+    function loadCalendar() {
+        grid.innerHTML = '';
+        for (let i = 1; i <= 30; i++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.className = 'day';
+            dayDiv.id = `day-${i}`;
+            dayDiv.innerHTML = `<span class="day-num">${i}</span>`;
+            grid.appendChild(dayDiv);
         }
+    }
+    loadCalendar();
 
-        async function saveData(type) {
-            if(type === 'shows') {
-                const date = document.getElementById('adm-date').value;
-                const title = document.getElementById('adm-title').value;
-                const price = document.getElementById('adm-price').value;
-                await db.collection('shows').add({ date, title, price, ts: Date.now() });
-            } else {
-                const url = document.getElementById('adm-img-url').value;
-                const desc = document.getElementById('adm-img-desc').value;
-                await db.collection('photobook').add({ url, desc, ts: Date.now() });
-            }
-            alert("Updated successfully!");
-            location.reload();
-        }
-
-        async function deleteItem(col, id) {
-            if(confirm("Are you sure?")) {
-                await db.collection(col).doc(id).delete();
-                location.reload();
-            }
-        }
-
-        async function init() {
-            // Live Calendar Month
-            const now = new Date();
-            const monthNames = ["JANUARI", "FEBRUARI", "MAART", "APRIL", "MEI", "JUNI", "JULI", "AUGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DECEMBER"];
-            document.getElementById('cal-month-name').innerText = `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
-            
-            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-            const calBody = document.getElementById('calendar-body');
-            
-            // Load Events
-            const showsSnap = await db.collection('shows').get();
-            const shows = {};
-            showsSnap.forEach(doc => {
-                const data = doc.data();
-                shows[data.date] = data;
-                // Add to Home Deals
-                document.getElementById('deal-container').innerHTML += `<div style="background:var(--rouge); padding:15px; border:1px dotted var(--gold);"><b>${data.title}</b><br>${data.price}</div>`;
-                // Add to Admin List
-                document.getElementById('adm-show-list').innerHTML += `<div class="data-list-item"><span>${data.date} - ${data.title}</span><button class="del-btn" onclick="deleteItem('shows','${doc.id}')">X</button></div>`;
-            });
-
-            for(let i=1; i<=daysInMonth; i++) {
-                const dStr = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${i.toString().padStart(2,'0')}`;
-                const cell = document.createElement('div');
-                cell.className = 'cal-day';
-                cell.innerHTML = `<div class="cal-num">${i}</div>`;
-                if(shows[dStr]) cell.innerHTML += `<div class="show-info">${shows[dStr].title}<br><b>${shows[dStr].price}</b></div>`;
-                calBody.appendChild(cell);
-            }
-
-            // Load Photobook
-            const bookSnap = await db.collection('photobook').orderBy('ts', 'asc').get();
-            const bookContainer = document.getElementById('book-content');
-            bookSnap.forEach(doc => {
-                const d = doc.data();
-                bookContainer.innerHTML += `
-                    <div class="book-row">
-                        <img src="${d.url}" class="book-img">
-                        <div class="book-text">${d.desc}</div>
-                    </div>
-                `;
-                document.getElementById('adm-book-list').innerHTML += `<div class="data-list-item"><span>Photo Page</span><button class="del-btn" onclick="deleteItem('photobook','${doc.id}')">X</button></div>`;
-            });
-        }
-
-        function showPage(id) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
-        function adminLogin() {
-            if(prompt("Enter Access Code:") === "Virtual2025!") {
-                localStorage.setItem('moulin_staff', 'true');
-                document.getElementById('admin-link').style.display = 'inline-block';
-                showPage('admin');
-            }
-        }
-        if(localStorage.getItem('moulin_staff')) document.getElementById('admin-link').style.display = 'inline-block';
+    // 2. Show Toevoegen (Dashboard functie)
+    function addShow() {
+        const day = document.getElementById('show-day').value;
+        const time = document.getElementById('show-time').value;
+        const price = document.getElementById('cancan-price').value;
         
-        init();
-    </script>
+        if(day > 0 && day <= 30) {
+            const dayCell = document.getElementById(`day-${day}`);
+            const showTag = document.createElement('div');
+            showTag.className = 'show-tag';
+            showTag.innerHTML = `${time}<br>Can-Can: ${price} R$<br><b>DELETE</b>`;
+            showTag.onclick = function() { this.remove(); }; // Verwijder functie
+            dayCell.appendChild(showTag);
+        }
+    }
+
+    // 3. Taal Wissel met Confetti & Fade
+    function changeLang(label, code) {
+        document.querySelector('.lang-dropdown').style.display = 'none';
+        
+        // Confetti effect
+        confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#d4af37', '#e60000']
+        });
+
+        // Fade animatie
+        document.body.style.opacity = '0';
+        
+        setTimeout(() => {
+            document.getElementById('active-lang').innerText = label;
+            
+            // Teksten aanpassen
+            if(code === 'en') {
+                document.getElementById('hero-sub').innerText = "Prepare for a world of beauty and romance, of excitement, drama, and excess!";
+                document.getElementById('cal-month').innerText = "APRIL 2026";
+            } else if (code === 'nl') {
+                document.getElementById('hero-sub').innerText = "Bereid je voor op een wereld vol schoonheid en romantiek...";
+                document.getElementById('cal-month').innerText = "APRIL 2026";
+            }
+            
+            document.body.style.opacity = '1';
+        }, 800);
+    }
+</script>
+
 </body>
 </html>
