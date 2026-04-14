@@ -6,25 +6,32 @@
     <title>Moulin Rouge! | Virtual Management System</title>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Playfair+Display:ital,wght@0,700;1,700&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
     
     <style>
         :root { 
-            --rouge: #9e0000; 
+            --rouge: #8b0000; 
             --gold: #d4af37; 
-            --dark-bg: #050000; 
-            --card-bg: rgba(20, 0, 0, 0.9);
-            --border: rgba(212, 175, 55, 0.3);
+            --dark-red: #2a0000;
+            --card-bg: rgba(30, 0, 0, 0.95);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; transition: all 0.3s ease; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body { 
-            background: var(--dark-bg);
-            /* Background inspired by the damask pattern in the provided image */
-            background-image: url('https://www.transparenttextures.com/patterns/black-linen-2.png'), radial-gradient(circle, #3a0000 0%, #050000 100%);
+            background: var(--dark-red);
             color: white; 
             font-family: 'Montserrat', sans-serif; 
+            overflow-x: hidden;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        /* --- Background Aesthetic --- */
+        .bg-pattern {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: radial-gradient(circle, #4a0000 0%, #1a0000 100%);
+            z-index: -1;
         }
 
         nav { 
@@ -37,46 +44,57 @@
         .logo-img { height: 60px; filter: drop-shadow(0 0 10px var(--gold)); cursor: pointer; }
 
         .nav-links a { color: white; text-decoration: none; margin-left: 20px; font-weight: 700; font-size: 12px; text-transform: uppercase; cursor: pointer; }
-        .nav-links a:hover { color: var(--gold); }
 
         .container { max-width: 1200px; margin: 40px auto; padding: 20px; }
 
-        /* --- Calendar Styling (Image 5 Reference) --- */
-        .calendar-header { text-align: center; font-family: 'Cinzel Decorative'; color: var(--gold); font-size: 32px; margin-bottom: 20px; text-transform: uppercase; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; background: rgba(212, 175, 55, 0.1); border: 1px solid var(--border); }
-        .cal-day-label { background: #000; padding: 10px; text-align: center; font-weight: bold; font-size: 12px; color: var(--gold); }
-        .cal-cell { min-height: 120px; background: rgba(0,0,0,0.6); border: 1px solid #222; padding: 5px; position: relative; }
-        .cal-date { font-size: 12px; color: #666; }
-        .show-tag { background: var(--rouge); font-size: 10px; padding: 4px; margin-top: 5px; border-radius: 2px; border-left: 3px solid var(--gold); }
+        /* --- Ready to Rouge Styling --- */
+        .rouge-header { 
+            font-family: 'Cinzel Decorative', cursive; 
+            font-size: 60px; 
+            color: var(--gold); 
+            text-align: center; 
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px var(--rouge);
+        }
 
-        /* --- Photo Book (Alternating) --- */
-        .book-row { display: flex; align-items: center; gap: 40px; margin-bottom: 60px; opacity: 0; transform: translateY(20px); }
-        .book-row.reveal { opacity: 1; transform: translateY(0); }
-        .book-row:nth-child(even) { flex-direction: row-reverse; }
-        .book-text { flex: 1; }
-        .book-img { flex: 1; border: 5px solid white; box-shadow: 10px 10px 30px rgba(0,0,0,0.8); max-height: 400px; object-fit: cover; }
+        /* --- Language Switcher --- */
+        .lang-picker {
+            position: fixed; bottom: 20px; right: 20px;
+            background: rgba(0,0,0,0.8);
+            padding: 10px; border: 1px solid var(--gold);
+            border-radius: 5px; z-index: 2000;
+        }
+        .lang-picker select { background: transparent; color: var(--gold); border: none; font-weight: bold; cursor: pointer; }
 
-        /* --- Admin --- */
+        /* --- Calendar & Dashboard UI --- */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 20px; }
+        .cal-cell { min-height: 100px; background: rgba(0,0,0,0.5); border: 1px solid #440000; padding: 5px; }
+        
         .admin-panel { background: #111; border: 2px solid var(--gold); padding: 30px; border-radius: 10px; }
-        .tab-btn { background: none; border: none; color: var(--gold); padding: 10px 20px; cursor: pointer; font-weight: bold; opacity: 0.5; }
-        .tab-btn.active { opacity: 1; border-bottom: 2px solid var(--gold); }
-
+        .btn-rouge { background: var(--rouge); color: white; border: none; padding: 12px 25px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        
         .section { display: none; }
         .section.active { display: block; }
 
-        .btn-rouge { background: var(--rouge); color: white; border: none; padding: 12px 25px; cursor: pointer; font-weight: bold; text-transform: uppercase; border-radius: 3px; }
-        input, select, textarea { width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444; color: white; }
+        /* --- Photobook Alternating --- */
+        .book-row { display: flex; align-items: center; gap: 40px; margin-bottom: 40px; }
+        .book-row:nth-child(even) { flex-direction: row-reverse; }
+        .book-img { width: 50%; border: 4px solid var(--gold); box-shadow: 0 0 20px black; }
+
+        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: white; }
     </style>
 </head>
 <body>
 
+    <div class="bg-pattern"></div>
+
     <nav>
         <img src="https://i.ibb.co/L6H7Qvj/moulin-rouge-windmill.png" class="logo-img" onclick="showPage('home')">
         <div class="nav-links">
-            <a onclick="showPage('home')">Home</a>
-            <a onclick="showPage('schedule')">Schedule</a>
-            <a onclick="showPage('photobook')">Story</a>
-            <a onclick="showPage('casting')">Casting</a>
+            <a onclick="showPage('home')" data-key="nav-home">Home</a>
+            <a onclick="showPage('schedule')" data-key="nav-schedule">Schedule</a>
+            <a onclick="showPage('photobook')" data-key="nav-story">Story</a>
+            <a onclick="showPage('casting')" data-key="nav-casting">Casting</a>
             <a id="admin-link" style="display:none; color: var(--gold);" onclick="showPage('admin')">Dashboard</a>
             <a onclick="adminLogin()" style="color: var(--rouge);">Staff</a>
         </div>
@@ -85,76 +103,76 @@
     <div class="container">
         
         <div id="home" class="section active">
-            <h1 style="font-family:'Playfair Display'; font-size: 50px; text-align: center; color: var(--gold);">GET READY TO ROUGE!</h1>
-            <p style="text-align:center; max-width: 800px; margin: 20px auto; line-height: 1.6;">
-                Baz Luhrmann's revolutionary film comes to life in a unique mash-up musical. 
-                Experience a world of beauty, freedom, and love.
-            </p>
+            <h1 class="rouge-header">GET READY TO ROUGE!</h1>
+            <div style="background: var(--card-bg); padding: 40px; border: 1px solid var(--gold); border-radius: 10px; text-align: center;">
+                <p id="home-desc" style="font-size: 18px; line-height: 1.8; color: #f0f0f0;">
+                    Prepare for a world of beauty and romance, of excitement, drama and excess! An extravagant world where all bohemians allow themselves to be seduced. Welcome to Moulin Rouge! The Musical...
+                </p>
+                <div style="background: var(--rouge); color: white; display: inline-block; padding: 5px 15px; margin-top: 20px; font-weight: bold;" data-key="lang-note">
+                    NOTE: ALL SONGS ARE PERFORMED IN ENGLISH
+                </div>
+            </div>
         </div>
 
         <div id="schedule" class="section">
-            <div class="calendar-header">October 2026</div>
-            <div class="calendar-grid" id="calendar-body">
-                <div class="cal-day-label">Mon</div><div class="cal-day-label">Tue</div><div class="cal-day-label">Wed</div>
-                <div class="cal-day-label">Thu</div><div class="cal-day-label">Fri</div><div class="cal-day-label">Sat</div>
-                <div class="cal-day-label">Sun</div>
-                </div>
+            <h2 style="text-align:center; font-family:'Cinzel Decorative'; color:var(--gold);" data-key="cal-title">OCTOBER 2026</h2>
+            <div class="calendar-grid" id="calendar-body"></div>
         </div>
 
         <div id="photobook" class="section">
-            <div id="book-content">
-                </div>
+            <div id="book-content"></div>
         </div>
 
         <div id="casting" class="section">
             <div style="max-width: 600px; margin: auto; background: var(--card-bg); padding: 40px; border: 1px solid var(--gold);">
-                <h2 style="color:var(--gold); margin-bottom:20px;">Audition Application</h2>
-                <input type="text" id="aud-name" placeholder="Full Name">
-                <input type="text" id="aud-discord" placeholder="Discord User">
-                <label>Can you attend all scheduled rehearsals?</label>
+                <h2 style="color:var(--gold); margin-bottom:20px;" data-key="cast-title">Audition</h2>
+                <input type="text" id="aud-name" placeholder="Name">
+                <input type="text" id="aud-discord" placeholder="Discord">
+                <p data-key="rehearsal-q">Can you attend all rehearsals?</p>
                 <select id="aud-rehearsals">
-                    <option value="yes">Yes, I am fully available</option>
-                    <option value="no">No, I have some conflicts</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
                 </select>
-                <textarea id="aud-exp" placeholder="Tell us about your musical experience..."></textarea>
-                <button class="btn-rouge" style="width:100%" onclick="submitAudition()">Submit Application</button>
+                <textarea id="aud-exp" placeholder="Experience"></textarea>
+                <button class="btn-rouge" onclick="submitAudition()">Submit</button>
             </div>
         </div>
 
         <div id="admin" class="section">
             <div class="admin-panel">
-                <div style="margin-bottom: 20px;">
-                    <button class="tab-btn active" onclick="switchAdmin('shows')">Schedule Shows</button>
-                    <button class="tab-btn" onclick="switchAdmin('book-edit')">Edit Photobook</button>
-                    <button class="tab-btn" onclick="switchAdmin('view-auditions')">View Auditions</button>
-                </div>
-
-                <div id="admin-shows">
-                    <h3>Plan a Show</h3>
-                    <input type="date" id="new-show-date">
-                    <input type="text" id="new-show-title" placeholder="Show Title (e.g. Preview, Opening Night)">
-                    <textarea id="new-show-desc" placeholder="Show Description"></textarea>
-                    <button class="btn-rouge" onclick="addShow()">Add to Calendar</button>
-                </div>
-
-                <div id="admin-book-edit" style="display:none;">
-                    <h3>Manage Pages</h3>
-                    <input type="text" id="page-img" placeholder="Image URL">
-                    <textarea id="page-text" placeholder="Page Description"></textarea>
-                    <button class="btn-rouge" onclick="addPage()">Add Page</button>
-                    <div id="admin-page-list" style="margin-top:20px;"></div>
-                </div>
-
-                <div id="admin-auditions" style="display:none;">
-                    <div id="audition-data-list"></div>
+                <h2 style="color:var(--gold); border-bottom:1px solid var(--gold); padding-bottom:10px;">Manager Suite</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+                    <div>
+                        <h3>Plan Show / Deal</h3>
+                        <input type="date" id="new-show-date">
+                        <input type="text" id="new-show-title" placeholder="Title (e.g. Opening Night / Deal Name)">
+                        <input type="text" id="new-show-price" placeholder="Ticket Price (e.g. 79,99)">
+                        <textarea id="new-show-desc" placeholder="Show/Deal Description"></textarea>
+                        <button class="btn-rouge" onclick="addShow()">Add to System</button>
+                    </div>
+                    <div>
+                        <h3>Manage Photobook</h3>
+                        <input type="text" id="page-img" placeholder="Image URL">
+                        <textarea id="page-text" placeholder="Description"></textarea>
+                        <button class="btn-rouge" onclick="addPage()">Add Page</button>
+                    </div>
                 </div>
             </div>
         </div>
 
     </div>
 
+    <div class="lang-picker">
+        <select onchange="changeLanguage(this.value)">
+            <option value="en">English</option>
+            <option value="nl">Nederlands</option>
+            <option value="de">Deutsch</option>
+        </select>
+    </div>
+
     <script>
-        // Use your existing Firebase config from the previous prompt
+        // Firebase Configuration (Using provided IDs)
         const firebaseConfig = {
             apiKey: "AIzaSyCCm6vZCE1KH1SnclU7NHF2BmeOUW_suio",
             authDomain: "wickedrobloxofficial.firebaseapp.com",
@@ -166,6 +184,95 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        const translations = {
+            en: {
+                "nav-home": "Home", "nav-schedule": "Schedule", "nav-story": "Story", "nav-casting": "Casting",
+                "lang-note": "NOTE: ALL SONGS ARE PERFORMED IN ENGLISH",
+                "home-desc": "Prepare for a world of beauty and romance, of excitement, drama and excess! An extravagant world where all bohemians allow themselves to be seduced. Welcome to Moulin Rouge! The Musical. Baz Luhrmann's revolutionary film comes to life in a unique mash-up musical, with more than 70 well-known songs. Winner of no less than 10 Tony Awards® and a tribute to truth, beauty, freedom and of course love. Moulin Rouge! The Musical is much more than a musical; it is a state of mind! Experience the most exuberant night of your life in the Beatrix Theater Utrecht."
+            },
+            nl: {
+                "nav-home": "Home", "nav-schedule": "Schema", "nav-story": "Verhaal", "nav-casting": "Auditie",
+                "lang-note": "LET OP: ALLE LIEDJES WORDEN IN HET ENGELS GEZONGEN",
+                "home-desc": "Bereid je voor op een wereld vol schoonheid en romantiek, van opwinding, drama en overdaad! Een extravagante wereld waar alle bohemians zich laten verleiden. Welkom bij Moulin Rouge! De Musical. De revolutionaire film van Baz Luhrmann komt tot leven in een unieke mash-up musical, met meer dan 70 bekende nummers. Winnaar van maar liefst 10 Tony Awards® en een eerbetoon aan waarheid, schoonheid, vrijheid en natuurlijk liefde. Moulin Rouge! De Musical is dan ook veel meer dan een musical; het is een state of mind! Beleef de meest uitbundige nacht van je leven in het Beatrix Theater Utrecht."
+            },
+            de: {
+                "nav-home": "Startseite", "nav-schedule": "Spielplan", "nav-story": "Geschichte", "nav-casting": "Casting",
+                "lang-note": "HINWEIS: ALLE LIEDER WERDEN AUF ENGLISCH GESUNGEN",
+                "home-desc": "Bereiten Sie sich auf eine Welt voller Schönheit und Romantik, Aufregung, Drama und Exzess vor! Eine extravagante Welt, in der sich alle Bohemiens verführen lassen. Willkommen bei Moulin Rouge! Das Musical. Baz Luhrmanns revolutionärer Film wird in einem einzigartigen Mash-up-Musical mit mehr als 70 bekannten Songs zum Leben erweckt. Gewinner von nicht weniger als 10 Tony Awards® und eine Hommage an Wahrheit, Schönheit, Freiheit und natürlich Liebe. Moulin Rouge! Das Musical ist viel mehr als ein Musical; es ist eine Lebenseinstellung! Erleben Sie die überschwänglichste Nacht Ihres Lebens im Beatrix Theater Utrecht."
+            }
+        };
+
+        function changeLanguage(lang) {
+            // Silver and Red Confetti
+            confetti({
+                particleCount: 150,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#8b0000', '#C0C0C0', '#ffffff', '#2a0000']
+            });
+
+            // Fade effect
+            document.body.style.opacity = '0';
+            setTimeout(() => {
+                const dict = translations[lang];
+                document.querySelectorAll('[data-key]').forEach(el => {
+                    const key = el.getAttribute('data-key');
+                    if (dict[key]) el.innerText = dict[key];
+                });
+                document.getElementById('home-desc').innerText = dict["home-desc"];
+                document.body.style.opacity = '1';
+            }, 500);
+        }
+
+        async function addShow() {
+            const date = document.getElementById('new-show-date').value;
+            const title = document.getElementById('new-show-title').value;
+            const price = document.getElementById('new-show-price').value;
+            const desc = document.getElementById('new-show-desc').value;
+            await db.collection('shows').add({ date, title, price, desc });
+            alert("Show/Deal Added!");
+        }
+
+        async function addPage() {
+            const img = document.getElementById('page-img').value;
+            const text = document.getElementById('page-text').value;
+            await db.collection('photobook').add({ img, text, ts: Date.now() });
+            alert("Page Added!");
+        }
+
+        async function renderCalendar() {
+            const container = document.getElementById('calendar-body');
+            container.innerHTML = "";
+            const showsSnap = await db.collection('shows').get();
+            const shows = {};
+            showsSnap.forEach(doc => shows[doc.data().date] = doc.data());
+
+            for(let i=1; i<=31; i++) {
+                const d = `2026-10-${i.toString().padStart(2, '0')}`;
+                const cell = document.createElement('div');
+                cell.className = 'cal-cell';
+                cell.innerHTML = `<b>${i}</b>`;
+                if(shows[d]) {
+                    cell.innerHTML += `<div style="background:var(--rouge); font-size:10px; padding:2px; margin-top:5px;">
+                        ${shows[d].title}<br><b>R$ ${shows[d].price}</b></div>`;
+                }
+                container.appendChild(cell);
+            }
+        }
+
+        async function loadPhotobook() {
+            const container = document.getElementById('book-content');
+            container.innerHTML = "";
+            const snap = await db.collection('photobook').orderBy('ts', 'asc').get();
+            snap.forEach(doc => {
+                const d = doc.data();
+                const row = document.createElement('div');
+                row.className = 'book-row';
+                row.innerHTML = `<div style="flex:1;">${d.text}</div><img src="${d.img}" class="book-img">`;
+                container.appendChild(row);
+            });
+        }
+
         function showPage(id) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -173,107 +280,14 @@
             if(id === 'photobook') loadPhotobook();
         }
 
-        // --- CALENDAR LOGIC ---
-        async function renderCalendar() {
-            const container = document.getElementById('calendar-body');
-            // Keep labels
-            container.innerHTML = '<div class="cal-day-label">Mon</div><div class="cal-day-label">Tue</div><div class="cal-day-label">Wed</div><div class="cal-day-label">Thu</div><div class="cal-day-label">Fri</div><div class="cal-day-label">Sat</div><div class="cal-day-label">Sun</div>';
-            
-            const showsSnap = await db.collection('shows').get();
-            const shows = {};
-            showsSnap.forEach(doc => shows[doc.data().date] = doc.data());
-
-            for(let i=1; i<=31; i++) {
-                const dateStr = `2026-10-${i.toString().padStart(2, '0')}`;
-                const cell = document.createElement('div');
-                cell.className = 'cal-cell';
-                cell.innerHTML = `<div class="cal-date">${i}</div>`;
-                if(shows[dateStr]) {
-                    cell.innerHTML += `<div class="show-tag"><b>${shows[dateStr].title}</b><br><small>${shows[dateStr].desc}</small></div>`;
-                }
-                container.appendChild(cell);
-            }
-        }
-
-        async function addShow() {
-            const date = document.getElementById('new-show-date').value;
-            const title = document.getElementById('new-show-title').value;
-            const desc = document.getElementById('new-show-desc').value;
-            await db.collection('shows').add({ date, title, desc });
-            alert("Show Added!");
-            renderCalendar();
-        }
-
-        // --- PHOTOBOOK LOGIC ---
-        async function loadPhotobook() {
-            const container = document.getElementById('book-content');
-            container.innerHTML = "Loading...";
-            const snap = await db.collection('photobook').get();
-            container.innerHTML = "";
-            snap.forEach(doc => {
-                const d = doc.data();
-                const row = document.createElement('div');
-                row.className = 'book-row reveal';
-                row.innerHTML = `
-                    <div class="book-text"><h2>The Legend</h2><p>${d.text}</p></div>
-                    <img src="${d.img}" class="book-img">
-                `;
-                container.appendChild(row);
-            });
-        }
-
-        async function addPage() {
-            const img = document.getElementById('page-img').value;
-            const text = document.getElementById('page-text').value;
-            await db.collection('photobook').add({ img, text });
-            alert("Page Added!");
-            loadPhotobook();
-        }
-
-        // --- CASTING LOGIC ---
-        async function submitAudition() {
-            const data = {
-                name: document.getElementById('aud-name').value,
-                discord: document.getElementById('aud-discord').value,
-                rehearsals: document.getElementById('aud-rehearsals').value,
-                exp: document.getElementById('aud-exp').value,
-                ts: Date.now()
-            };
-            await db.collection('auditions').add(data);
-            alert("Application Sent!");
-            showPage('home');
-        }
-
-        // --- ADMIN MISC ---
-        function switchAdmin(id) {
-            document.getElementById('admin-shows').style.display = id === 'shows' ? 'block' : 'none';
-            document.getElementById('admin-book-edit').style.display = id === 'book-edit' ? 'block' : 'none';
-            document.getElementById('admin-auditions').style.display = id === 'view-auditions' ? 'block' : 'none';
-            if(id === 'view-auditions') loadAuditions();
-        }
-
-        async function loadAuditions() {
-            const container = document.getElementById('audition-data-list');
-            const snap = await db.collection('auditions').get();
-            container.innerHTML = "";
-            snap.forEach(doc => {
-                const d = doc.data();
-                container.innerHTML += `<div style="padding:10px; border-bottom:1px solid #444;">
-                    <b>${d.name}</b> (Discord: ${d.discord})<br>
-                    Availability: ${d.rehearsals}
-                </div>`;
-            });
-        }
-
         function adminLogin() {
-            if(prompt("Enter Management Code:") === "Virtual2025!") {
+            if(prompt("Staff Code:") === "Virtual2025!") {
                 localStorage.setItem('moulin_staff', 'true');
                 document.getElementById('admin-link').style.display = 'inline-block';
                 showPage('admin');
             }
         }
         if(localStorage.getItem('moulin_staff')) document.getElementById('admin-link').style.display = 'inline-block';
-
     </script>
 </body>
 </html>
