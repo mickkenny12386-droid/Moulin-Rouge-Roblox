@@ -15,69 +15,75 @@
         body { 
             background: var(--black-deep); color: var(--white); font-family: 'Montserrat', sans-serif; 
             margin: 0; background-image: radial-gradient(circle at top, #1a150a 0%, #050505 100%);
-            min-height: 100vh;
+            min-height: 100vh; overflow-x: hidden;
         }
 
-        /* Nav */
+        /* Nav & Layout */
         nav { 
             display: flex; justify-content: space-between; align-items: center; padding: 25px 8%; 
-            border-bottom: 1px solid rgba(212, 175, 55, 0.3); background: rgba(0,0,0,0.95);
-            position: sticky; top: 0; z-index: 1000;
+            border-bottom: 2px solid var(--gold); background: rgba(0,0,0,0.95);
+            position: sticky; top: 0; z-index: 1000; box-shadow: 0 5px 20px rgba(0,0,0,0.5);
         }
-        .logo { font-family: 'Cinzel', serif; color: var(--gold); font-size: 1.8rem; letter-spacing: 4px; }
+        .logo { font-family: 'Cinzel', serif; color: var(--gold); font-size: 1.8rem; letter-spacing: 4px; text-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
         .nav-links a { color: var(--white); text-decoration: none; margin-left: 30px; font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 0.8rem; }
         .nav-links a:hover { color: var(--gold); }
 
-        section { padding: 60px 8%; display: none; }
-        .active { display: block; animation: pageIn 0.6s ease-out; }
-        @keyframes pageIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        section { padding: 80px 8%; display: none; }
+        .active { display: block; animation: pageIn 0.8s ease-out; }
+        @keyframes pageIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .section-title { font-family: 'Oswald', sans-serif; font-size: 2.5rem; text-align: center; color: var(--gold); letter-spacing: 5px; text-transform: uppercase; margin-bottom: 40px; }
+        .section-title { font-family: 'Cinzel', serif; font-size: 3rem; text-align: center; color: var(--gold); letter-spacing: 5px; text-transform: uppercase; margin-bottom: 50px; text-shadow: 0 0 15px var(--gold); }
 
-        /* UI Elements */
-        .luxury-box { background: var(--black-soft); border: 1px solid var(--gold); padding: 40px; max-width: 750px; margin: 0 auto; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
-        .show-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
-        .show-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(212, 175, 55, 0.2); padding: 30px; text-align: center; transition: 0.4s; }
-        .show-card:hover { border-color: var(--gold); transform: translateY(-5px); background: rgba(212,175,55,0.05); }
+        /* Luxe UI Elements */
+        .luxury-box { background: var(--black-soft); border: 1px solid var(--gold); padding: 50px; max-width: 800px; margin: 0 auto; box-shadow: 0 15px 50px rgba(0,0,0,0.8); }
+        input, select, textarea { width: 100%; padding: 15px; margin: 10px 0; background: #000; border: 1px solid #333; color: white; box-sizing: border-box; font-family: inherit; }
+        input:focus { border-color: var(--gold); outline: none; }
+        .btn { background: var(--gold); color: black; border: none; padding: 18px; cursor: pointer; font-weight: bold; width: 100%; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; font-family: 'Oswald'; font-size: 1rem; }
+        .btn:hover { background: white; box-shadow: 0 0 25px var(--gold); }
+        .btn-outline { background: transparent; color: var(--gold); border: 2px solid var(--gold); }
+        .btn-outline:hover { background: var(--gold); color: black; }
 
-        input, select { width: 100%; padding: 15px; margin: 10px 0; background: #000; border: 1px solid #333; color: white; box-sizing: border-box; }
-        .btn { background: var(--gold); color: black; border: none; padding: 15px; cursor: pointer; font-weight: bold; width: 100%; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; }
-        .btn:hover { background: white; box-shadow: 0 0 20px var(--gold); }
-        .btn-outline { background: transparent; color: var(--gold); border: 1px solid var(--gold); }
-
-        /* Seating Chart V2 */
-        .seating-area { background: rgba(0,0,0,0.4); padding: 50px 20px; border-radius: 10px; border: 1px solid #222; position: relative; }
-        .stage-visual { 
-            width: 70%; height: 40px; background: linear-gradient(to bottom, var(--gold), #886b1c); 
-            margin: 0 auto 60px auto; border-radius: 0 0 100px 100px; 
-            display: flex; align-items: center; justify-content: center;
-            color: black; font-family: 'Oswald'; font-size: 0.8rem; letter-spacing: 5px;
-            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.2);
+        /* Show Cards met Foto & Fade */
+        .show-list-container { display: flex; flex-direction: column; gap: 40px; }
+        .show-card-luxe { 
+            display: flex; background: #000; border: 1px solid #222; 
+            border-radius: 4px; overflow: hidden; height: 350px;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .show-card-luxe:hover { transform: translateY(-5px); border-color: var(--gold); box-shadow: 0 10px 30px rgba(212,175,55,0.2); }
+        
+        .show-image-section { width: 45%; position: relative; overflow: hidden; }
+        .show-image-section img { width: 100%; height: 100%; object-fit: cover; }
+        .show-image-fade { 
+            position: absolute; top: 0; right: 0; width: 30%; height: 100%; 
+            background: linear-gradient(to right, transparent, #000); 
         }
 
-        .seat-grid { display: grid; gap: 8px; justify-content: center; perspective: 1000px; }
-        
+        .show-details-section { 
+            width: 55%; padding: 40px; display: flex; flex-direction: column; 
+            justify-content: space-between; align-items: flex-start;
+            background: linear-gradient(to right, #000, #080808);
+        }
+        .show-details-section h3 { font-family: 'Cinzel', serif; font-size: 2.2rem; color: var(--gold); margin: 0 0 10px 0; text-shadow: 0 0 10px var(--gold); }
+        .show-details-section p { font-size: 0.9rem; opacity: 0.7; margin: 0 0 30px 0; letter-spacing: 1px; }
+
+        /* Seating Chart & Scanner */
+        .seating-area { background: rgba(0,0,0,0.5); padding: 40px; border-radius: 8px; border: 1px solid #222; }
+        .stage { width: 300px; height: 10px; background: var(--gold); margin: 0 auto 50px auto; box-shadow: 0 0 30px var(--gold); border-radius: 50%; }
+        .seat-grid { display: grid; gap: 8px; justify-content: center; }
         .seat { 
-            width: 28px; height: 28px; border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 4px 4px 8px 8px; 
-            display: flex; align-items: center; justify-content: center; font-size: 0.6rem; 
-            cursor: pointer; transition: 0.3s; position: relative; background: #111;
+            width: 30px; height: 30px; border: 1px solid #444; border-radius: 4px;
+            display: flex; align-items: center; justify-content: center; font-size: 0.7rem; 
+            cursor: pointer; transition: 0.2s; color: #666;
         }
-        .seat:hover:not(.occupied):not(.blocked) { background: var(--gold); transform: translateY(-3px) scale(1.1); color: black; }
-        .seat.selected { background: var(--white); color: black; box-shadow: 0 0 20px var(--white); border-color: white; }
-        .seat.occupied { background: #333; border-color: #444; color: #555; cursor: not-allowed; }
-        .seat.blocked { background: #400; border-color: #ff0000; color: #900; cursor: not-allowed; }
-
-        /* Theater Curved Rows */
-        .theater-row { display: flex; gap: 8px; justify-content: center; margin-bottom: 5px; }
+        .seat:hover:not(.occupied):not(.blocked) { background: var(--gold); color: black; transform: scale(1.1); }
+        .seat.selected { background: var(--white); color: black; box-shadow: 0 0 15px white; }
+        .seat.occupied { background: #222; opacity: 0.3; cursor: not-allowed; }
         
-        /* Conference U-Shape Improved */
-        .u-layout { display: flex; gap: 60px; justify-content: center; align-items: flex-start; }
-        .u-side { display: grid; grid-template-columns: 1fr; gap: 6px; }
-        .u-back { display: grid; grid-template-columns: repeat(14, 1fr); gap: 6px; padding-top: 20px; }
+        .whitelist-item { display: flex; justify-content: space-between; align-items: center; background: #000; padding: 15px; border: 1px solid #333; margin-bottom: 8px; font-weight: bold; }
+        .remove-btn { color: #ff4444; cursor: pointer; text-transform: uppercase; font-size: 0.7rem; font-weight: bold; }
 
-        .legend { display: flex; justify-content: center; gap: 20px; margin-bottom: 30px; font-size: 0.7rem; color: #888; }
-        .legend-item { display: flex; align-items: center; gap: 5px; }
-        .l-box { width: 12px; height: 12px; border-radius: 2px; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
@@ -91,204 +97,229 @@
 </nav>
 
 <section id="home" class="active">
-    <h1 class="section-title">Ticket Shop</h1>
-    <div id="show-list" class="show-grid"></div>
+    <h1 class="section-title">THE RED CARPET</h1>
+    <div id="show-list" class="show-list-container">
+        </div>
 </section>
 
 <section id="booking-login">
     <div class="luxury-box">
-        <h2 style="color:var(--gold); font-family:'Oswald';">USER DETAILS</h2>
-        <input type="text" id="user-discord" placeholder="Discord Username (e.g., Name#0000)">
+        <h2 style="color:var(--gold); font-family:'Cinzel';">GALA RESERVATION</h2>
+        <p style="opacity:0.7; font-size:0.9rem; margin-bottom:30px;">Enter your details to access the exclusive seating chart.</p>
+        <input type="text" id="user-discord" placeholder="Discord Username (e.g. Name#0000)">
         <input type="text" id="user-roblox" placeholder="Roblox Username">
-        <button class="btn" onclick="openSeating()">CHOOSE YOUR SEAT</button>
+        <button class="btn" onclick="openSeating()">ACCESS SEATING</button>
     </div>
 </section>
 
 <section id="seating">
-    <h1 class="section-title" style="font-size:1.8rem;">Select Your Seat</h1>
-    
-    <div class="legend">
-        <div class="legend-item"><div class="l-box" style="border:1px solid var(--gold)"></div> Available</div>
-        <div class="legend-item"><div class="l-box" style="background:#333"></div> Occupied</div>
-        <div class="legend-item"><div class="l-box" style="background:#400"></div> Blocked</div>
-        <div class="legend-item"><div class="l-box" style="background:white"></div> Selected</div>
-    </div>
-
+    <h1 class="section-title">SELECT SEAT</h1>
     <div class="seating-area">
-        <div class="stage-visual">STAGE / SCREEN</div>
+        <div class="stage"></div>
         <div id="chart-render"></div>
-        
         <div style="text-align:center; margin-top:40px;">
-            <p style="font-size:0.9rem;">Seat: <span id="selected-seat-display" style="color:var(--gold); font-weight:bold; font-size:1.2rem;">-</span></p>
-            <button class="btn" style="max-width:300px;" onclick="confirmBooking()">CONFIRM & BOOK</button>
+            <p style="font-size:1.1rem;">Seat: <span id="selected-seat-display" style="color:var(--gold); font-weight:bold; font-size:1.5rem;">-</span></p>
+            <button class="btn" style="max-width:350px;" onclick="confirmBooking()">CONFIRM BOOKING</button>
         </div>
     </div>
 </section>
 
 <section id="admin">
-    <h1 class="section-title">Owner Dashboard</h1>
+    <h1 class="section-title">OWNER PANEL</h1>
+    
+    <div class="luxury-box" style="margin-bottom:40px;">
+        <h3 style="color:var(--gold); font-family:'Cinzel';">MANAGE TICKETHOLDERS</h3>
+        <p style="font-size:0.8rem; opacity:0.7;">Manually add people to the automatic Roblox scanner whitelist.</p>
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="manual-roblox-name" placeholder="Roblox Username" style="margin:0;">
+            <button class="btn" style="width:150px;" onclick="addToWhitelist()">ADD TO LIST</button>
+        </div>
+        <div id="whitelist-display" style="margin-top:20px; max-height:200px; overflow-y:auto; border-top:1px solid #333; padding-top:10px;">
+            </div>
+    </div>
+
     <div class="luxury-box">
-        <h3>Create New Show</h3>
+        <h3 style="color:var(--gold); font-family:'Cinzel';">CREATE NEW SHOW</h3>
         <input type="text" id="new-name" placeholder="Show Title">
         <input type="date" id="new-date">
-        <select id="new-venue" onchange="previewAdmin()">
-            <option value="theater">Grand Theater (7 Rows x 12 Seats)</option>
-            <option value="conference">Conference Hall (U-Shape Setup)</option>
-        </select>
-        <p style="font-size:0.7rem; color:var(--gold); margin-top:20px;">CLICK TO BLOCK SEATS FOR STAFF/VIP:</p>
-        <div id="admin-preview" style="transform:scale(0.8);"></div>
-        <button class="btn" onclick="saveShow()">PUBLISH SHOW</button>
+        <input type="text" id="new-img" placeholder="Image URL (Imgur or direct link)">
+        <button class="btn" onclick="saveShow()">PUBLISH GALA SHOW</button>
     </div>
     
-    <h2 class="section-title" style="font-size:1.5rem; margin-top:60px;">Manage Existing Shows</h2>
-    <div id="admin-manage-list" class="show-grid"></div>
+    <div id="admin-manage-list" class="show-list-container" style="margin-top:40px;"></div>
 </section>
 
 <script>
-    let shows = JSON.parse(localStorage.getItem('ma_shows_v2')) || [];
+    let shows = JSON.parse(localStorage.getItem('ma_shows_luxe_v1')) || [];
+    let whitelist = JSON.parse(localStorage.getItem('ma_whitelist')) || [];
     let currentShow = null;
     let selectedSeat = null;
-    let blockedSeats = [];
+
     const WEBHOOK = "https://discord.com/api/webhooks/1495954546743316644/QkS7uzzhImZ9nSZuVzLe113MMQ9X9xqsvdePzpxSEiq66DxneFRINjvxOKfcnhwBLmvx";
 
     function showPage(id) {
         document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
+        if(id === 'admin') renderWhitelist();
         window.scrollTo(0,0);
     }
 
     function authAdmin() {
-        if(prompt("Owner Password:") === "firsteditionmusical") {
-            showPage('admin'); renderAdminList(); previewAdmin();
-        } else alert("Invalid Password");
+        if(prompt("Owner Password:") === "firsteditionmusical") showPage('admin');
+        else alert("Access Denied.");
     }
 
-    // --- SEATING ENGINE ---
-
-    function renderVenue(venue, container, isAdmin, showData = null) {
-        container.innerHTML = '';
-        if(venue === 'theater') {
-            for(let r=1; r<=7; r++) {
-                const rowDiv = document.createElement('div');
-                rowDiv.className = 'theater-row';
-                for(let s=1; s<=12; s++) {
-                    const label = `Row ${r}-S${s}`;
-                    createSeat(label, s, rowDiv, isAdmin, showData);
-                }
-                container.appendChild(rowDiv);
-            }
-        } else {
-            const uWrap = document.createElement('div'); uWrap.className = 'u-layout';
-            const L = document.createElement('div'); L.className = 'u-side';
-            const B = document.createElement('div'); B.className = 'u-back';
-            const R = document.createElement('div'); R.className = 'u-side';
-            
-            for(let i=1; i<=12; i++) createSeat(`Left-${i}`, i, L, isAdmin, showData);
-            for(let i=1; i<=28; i++) createSeat(`Back-${i}`, i, B, isAdmin, showData);
-            for(let i=1; i<=12; i++) createSeat(`Right-${i}`, i, R, isAdmin, showData);
-            
-            uWrap.append(L, B, R); container.appendChild(uWrap);
+    // --- WHITELIST (Scanner) ---
+    function addToWhitelist(nameFromBooking) {
+        const name = nameFromBooking || document.getElementById('manual-roblox-name').value;
+        if(!name) return;
+        if(!whitelist.includes(name)) {
+            whitelist.push(name);
+            localStorage.setItem('ma_whitelist', JSON.stringify(whitelist));
+            renderWhitelist();
+            if(!nameFromBooking) document.getElementById('manual-roblox-name').value = "";
         }
     }
 
-    function createSeat(label, num, container, isAdmin, data) {
-        const s = document.createElement('div'); s.className = 'seat'; s.innerText = num;
-        if(data) {
-            if(data.blocked?.includes(label)) s.classList.add('blocked');
-            if(data.occupied?.includes(label)) s.classList.add('occupied');
-        }
-        s.onclick = () => {
-            if(isAdmin) {
-                s.classList.toggle('blocked');
-                if(s.classList.contains('blocked')) blockedSeats.push(label);
-                else blockedSeats = blockedSeats.filter(x => x !== label);
-            } else {
-                if(s.classList.contains('occupied') || s.classList.contains('blocked')) return;
-                document.querySelectorAll('.seat').forEach(x => x.classList.remove('selected'));
-                s.classList.add('selected'); selectedSeat = label;
-                document.getElementById('selected-seat-display').innerText = label;
-            }
-        };
-        container.appendChild(s);
+    function removeFromWhitelist(name) {
+        whitelist = whitelist.filter(n => n !== name);
+        localStorage.setItem('ma_whitelist', JSON.stringify(whitelist));
+        renderWhitelist();
     }
 
-    // --- LOGIC ---
-
-    function previewAdmin() {
-        blockedSeats = [];
-        renderVenue(document.getElementById('new-venue').value, document.getElementById('admin-preview'), true);
+    function renderWhitelist() {
+        const container = document.getElementById('whitelist-display');
+        container.innerHTML = whitelist.map(name => `
+            <div class="whitelist-item">
+                <span>${name}</span>
+                <span class="remove-btn" onclick="removeFromWhitelist('${name}')">REMOVE</span>
+            </div>
+        `).join('');
     }
 
+    // --- SHOW LOGIC MET FOTO'S ---
     function saveShow() {
         const name = document.getElementById('new-name').value;
         const date = document.getElementById('new-date').value;
-        if(!name || !date) return alert("Fill all fields");
-        shows.push({ id: Date.now(), name, date, venue: document.getElementById('new-venue').value, blocked: [...blockedSeats], occupied: [] });
-        updateAll(); alert("Show Published!");
-    }
-
-    function deleteShow(id) {
-        if(confirm("Delete this show?")) {
-            shows = shows.filter(s => s.id !== id);
-            updateAll();
-        }
+        const img = document.getElementById('new-img').value || "https://i.imgur.com/2Y4uT6K.jpeg"; // Default gala img
+        
+        if(!name || !date) return alert("Fill fields.");
+        shows.push({ id: Date.now(), name, date, img, occupied: [] });
+        updateAll();
+        alert("Gala Show Published!");
     }
 
     function updateAll() {
-        localStorage.setItem('ma_shows_v2', JSON.stringify(shows));
-        renderHome(); renderAdminList();
+        localStorage.setItem('ma_shows_luxe_v1', JSON.stringify(shows));
+        renderHome();
+        renderAdminList();
     }
 
     function renderHome() {
         document.getElementById('show-list').innerHTML = shows.map(s => `
-            <div class="show-card">
-                <h3 style="color:var(--gold); font-family:'Oswald'; margin:0;">${s.name}</h3>
-                <p style="font-size:0.8rem; opacity:0.6;">${s.date}</p>
-                <button class="btn btn-outline" onclick="startBooking(${s.id})">BOOK NOW</button>
+            <div class="show-card-luxe">
+                <div class="show-image-section">
+                    <img src="${s.img}" alt="show photo">
+                    <div class="show-image-fade"></div>
+                </div>
+                <div class="show-details-section">
+                    <div>
+                        <h3>${s.name}</h3>
+                        <p>${s.date}</p>
+                    </div>
+                    <button class="btn btn-outline" onclick="startBooking(${s.id})">BOOK GALA TICKET</button>
+                </div>
             </div>`).join('');
     }
 
     function renderAdminList() {
         document.getElementById('admin-manage-list').innerHTML = shows.map(s => `
-            <div class="show-card" style="padding:15px;">
-                <h4 style="margin:0; font-size:0.9rem;">${s.name}</h4>
-                <button class="btn btn-outline" style="color:red; border-color:#400; margin-top:10px; font-size:0.6rem; padding:5px;" onclick="deleteShow(${s.id})">DELETE</button>
+            <div class="show-card-luxe" style="height:150px; padding:20px;">
+                <div style="flex:1;">
+                    <h4 style="margin:0; font-family:'Cinzel'; color:var(--gold);">${s.name}</h4>
+                    <p style="font-size:0.8rem; margin:5px 0 0 0;">${s.date}</p>
+                </div>
+                <button class="btn btn-outline" style="width:auto; color:red; border-color:#400;" onclick="deleteShow(${s.id})">DELETE SHOW</button>
             </div>`).join('');
     }
 
+    function deleteShow(id) {
+        if(confirm("Are you sure you want to delete this gala show?")) {
+            shows = shows.filter(s => s.id !== id);
+            updateAll();
+        }
+    }
+
+    // --- TICKET & SEATING ---
     function startBooking(id) {
         currentShow = shows.find(s => s.id === id);
         showPage('booking-login');
     }
 
     function openSeating() {
-        if(!document.getElementById('user-discord').value) return alert("Please enter your Discord name.");
+        if(!document.getElementById('user-roblox').value) return alert("Roblox username is required for entry.");
         showPage('seating');
-        renderVenue(currentShow.venue, document.getElementById('chart-render'), false, currentShow);
+        renderTheater();
+    }
+
+    function renderTheater() {
+        const container = document.getElementById('chart-render');
+        container.innerHTML = '';
+        const rows = 7;
+        const seatsPerRow = 12;
+        container.style.display = 'grid';
+        container.style.gridTemplateColumns = `repeat(${seatsPerRow}, 1fr)`;
+        container.style.gap = '8px';
+        container.style.justifyContent = 'center';
+
+        for(let r=1; r<=rows; r++) {
+            for(let s=1; s<=seatsPerRow; s++) {
+                const label = `Row ${r}-S${s}`;
+                const seat = document.createElement('div');
+                seat.className = 'seat';
+                seat.innerText = s;
+                if(currentShow.occupied.includes(label)) seat.className += ' occupied';
+                seat.onclick = () => {
+                    if(seat.classList.contains('occupied')) return;
+                    document.querySelectorAll('.seat').forEach(x => x.classList.remove('selected'));
+                    seat.classList.add('selected');
+                    selectedSeat = label;
+                    document.getElementById('selected-seat-display').innerText = label;
+                };
+                container.appendChild(seat);
+            }
+        }
     }
 
     function confirmBooking() {
-        if(!selectedSeat) return alert("Please select a seat.");
-        currentShow.occupied.push(selectedSeat);
+        const robloxName = document.getElementById('user-roblox').value;
+        const discordName = document.getElementById('user-discord').value || "Unknown";
+        if(!selectedSeat || !robloxName) return alert("Select a seat and enter Roblox username.");
         
+        currentShow.occupied.push(selectedSeat);
+        addToWhitelist(robloxName); // Voegt automatisch toe aan de lijst voor Roblox scanner!
+
         fetch(WEBHOOK, {
             method: 'POST', headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
                 embeds: [{
-                    title: "🎟️ NEW TICKET RESERVED", color: 13936439,
+                    title: "🏆 NEW GALA TICKET RESERVED",
+                    color: 13936439, // Goud kleur
                     fields: [
                         {name: "Show", value: currentShow.name, inline: true},
                         {name: "Seat", value: selectedSeat, inline: true},
-                        {name: "Discord", value: document.getElementById('user-discord').value},
-                        {name: "Roblox", value: document.getElementById('user-roblox').value}
-                    ], footer: { text: "Musical Awards Automated System" }, timestamp: new Date()
+                        {name: "Roblox", value: robloxName},
+                        {name: "Discord", value: discordName}
+                    ],
+                    timestamp: new Date()
                 }]
             })
-        }).then(() => {
-            confetti({ particleCount: 150, colors: ['#d4af37', '#ffffff'] });
-            alert("Reservation Complete! See you at the show.");
-            updateAll(); showPage('home');
         });
+
+        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#d4af37', '#ffffff'] });
+        alert("Booking Complete! You are now on the official gala whitelist.");
+        updateAll();
+        showPage('home');
     }
 
     renderHome();
